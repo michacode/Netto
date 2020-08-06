@@ -1,0 +1,462 @@
+#!/usr/bin/env bash
+
+scan="nmcli -f IN-USE,SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE,CHAN dev wifi"
+ssid=''
+wpa=''
+autocon=''
+conname=''
+mon=''
+iwconfig=''
+ok=''
+dictpath=''
+bssidtocrack=''
+bssid=''
+hndtryk=''
+crackbssid=''
+phy_line=$(mktemp)
+wifi_dev=$(mktemp)
+mondevice=$(mktemp)
+dev=''
+dict=''
+dictpath=''
+mondev=''
+rule=''
+os="NETTO (Alpha vers. 0.10)"
+
+	############################################################
+	######################## Funktioner ########################
+	############################################################
+
+
+	#################### STARTER MONITORERING ###################
+	###########  A N O R M A L E  F U N K T I O N E R ###########	
+crack(){
+	echo "CRACKING AF NETVÆRK KRÆVER IKKE KUN PERSONLIGE TILLADELSER."
+	mon="sudo -s airmon-ng"
+	$mon  > ${phy_line}
+	while read line; do
+		for searchdev in $line; do
+			if [[ $searchdev = *"wlp"* ]] || [[ $searchdev = *"wlan"* ]];then
+				echo "DIT UDSTYR ER:" $searchdev
+				dev=$searchdev
+				break
+			fi
+		done
+	done<${phy_line}
+	rm $phy_line
+	rm $wifi_dev
+	echo ""
+	echo "STOPPER NETWORKMANAGER: SYSTEMCTL"
+	killnm="sudo systemctl stop NetworkManager"
+	$killnm
+	clear
+	echo "AIRCRACK-NG STARTER: CHECK AND KILL"
+	monkill="sudo airmon-ng check kill"
+	$monkil
+	clear
+	echo "AIRCRACK-NG STARTER: MONITOR"
+	monstart="sudo airmon-ng start $dev"
+	$monstart
+	clear
+	echo "FINDER MONITORERINGSUDSTYR: IFCONFIG"
+	ifconfig="ifconfig"
+	$ifconfig > ${mondevice}
+	while read line; do
+		for searchmon in $line; do
+			if [[ $searchmon = ${dev+*"mon"*} ]]; then
+				echo "DIT MONITORERINGSUDSTYR ER:" ${searchmon//:}
+				mondev=${searchmon//:}
+				break
+			fi
+		done
+	done<${mondevice}
+	crackshake
+}	
+
+	##################### FIND PIBE OG GIV HÅNDTRYK ####################
+crackshake(){
+	getbssid="sudo airodump-ng $mondev"
+	clear
+	echo "(1/2) SKRIPTET STARTER NU AIRODUMP-NG. DER GENERERES EN LIST AF TILGÆNGELIGE NETVÆRK.   "
+	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES q-TASTEN TO GANGE."
+	echo "                                                                                        "
+	echo "                                                                                        "
+	echo "      (!) Når dette tegn vises skal du være ekstra opmærksom. Dette skyldes skriptets   "
+	echo "          alpha-tilstand. Vær opmærksom på at, hvis du sendes tilbage hertil er der     "
+	echo "          noget, der usædvanligt utilstrækkeligt ved din indtastning.                   "
+	echo "                                                                                        "
+	echo "                                                                                        "
+	read -p "   ENTER/RETURN for at fortsætte...                                                  "
+	$getbssid
+	echo ""
+	read -p "(!) BSSID: " bssid
+	read -p "(!) KANAL: " kanal 
+	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk
+	if [ -z $bssid ]; then
+		fejla="(!)Feltet BSSID kan ikke være tomt"
+		crackshake
+	elif [ -z $kanal ]; then
+		fejlb="(!) Feltet KANAL kan ikke være tomt"
+		crackshake
+	elif [ -z $hndtryk ]; then
+		fejlc="(!) Feltet HÆNDTRYKKETS KALDENAVN kan ikke være tomt"
+		crackshake
+	elif [[ "$hndtryk" = *"netto"* ]]; then
+		fejld="(!) AF PRAKTISKE GRUNDE BEDES DU VÆLGE ET ANDET NAVN."
+		crackshake
+	fi
+	bssidtocrack="sudo airodump-ng -c $kanal --bssid $bssid -w $hndtryk wlp4s0mon --ignore-negative-one"
+	$bssidtocrack
+	crackmeth
+}
+
+	####################        CRACK SLANGS         ##################
+crackmeth(){
+	clear
+	echo "(2/2) AIRODUMP-NG OVERVÅGER NU FORBINDELSEN OG FORSØGE AT OPFANGE ET HÅNDTRYK.     "
+        echo "      ET HÅNDTRYK KAN GENERERES NÅR ET APPARAT FORSØGER AT OPRETTE FORBINDELSE TIL "
+	echo "      NETVÆRKET. HVIS DU BLIVER TRÆT AF AT VENTE, KAN DU FORSØGE AT GENNEMTVINGE ET"
+	echo "      HÅNDTRYK, VED SELV AT FORSØGE AT OPRETTE FORBINDELSE TIL NETVÆRKET.          "
+	echo "      HVIS DER GENERERES ET HÅNDTRYK, VISES DETTE I ØVERSTE HØJRE HJØRNE.          "
+	echo "                                                                                   "
+	echo "      TRYK TO GANGE PÅ q-TASTEN NÅR ET HÅNDTRYK MELDES FUNDET.                     "
+	echo "                                                                                   "
+	echo "      (!) HVILKEN METODE VIL DU BRUGE TIL AT CRACKE FORBINDELSEN NÅR HÅNDTRYKKET ER"
+	echo "          GENERERET?                                                               "
+	echo "                                                                                   "
+	echo "          <h1> HASHCAT CRACKING MED ORDBOG, MEN UDEN REGELSÆT (HURTIG)             "
+	echo "               Denne metode anbefales ved brug af god WPA-ordbog.                  "
+	echo "                                                                                   "
+	echo "          <h2> HASHCAT CRACKING MED ORDBOG MED REGELSÆT (MULIGVIS MEGET LANGSOM)   "
+	echo "               Denne metode anbefales ikke til brug af WPA cracking. Men hvis du   "
+	echo "               ved hvad du laver og har visse info om sikkerhedskoden kan denne    "
+	echo "               metode være nyttig. Opsætning af ordbog og regel er muligvis        " 
+	echo "               nødvendig.                                                          "
+	echo "                                                                                   "
+	echo "          <ac> AIRCRACK CRACKING MED ORDBOG; MEN UDEN REGELSÆT (LANGSOM)           "
+	echo "               Denne metode langsommere end h1, men kan være nyttig, hvis Hashcat  "
+	echo "               ikke er installeret (af en eller anden mystisk årsag).              "
+	echo ""
+	read -p "KOMMANDO (fx. xx) " ab
+	maccrack
+}
+
+maccrack(){
+	if [ "$ab" == "h2" ]; then
+		meth="h2"
+		crackdict
+		elif [ "$ab" == "h1" ]; then
+			meth="h1"
+			crackdict
+		elif [ "$ab" == "ac" ]; then
+			meth="ac"
+			crackdict
+	else	
+		crackmeth
+	fi
+}
+
+	#################### VÆLG ORDBOG ######################
+	# ${PWD}/dict = /nuværende_mappe/dict
+crackdict(){	
+	clear
+	echo "VÆLG EN AF DINE ORDBØGER:"
+	echo ""
+	listdicts="ls -f ${HOME}/dicts"
+	$listdicts
+	echo ""
+	read -p "(!) SKRIV ORDBOGENS FILNAVN (${HOME}/dicts/) " dictfile
+	dictpath="${HOME}/dicts/${dictfile}"
+	if [[ -f "$dictpath" ]]; then
+		paybill
+	else
+		crackdict
+	fi
+}
+
+	########## SLÅ INTERNET TIL IGEN ################
+paybill(){
+	rm $mondevice
+	clear
+	echo "STOPPER MONITORERING PÅ: $mondev"
+	monstop="sudo airmon-ng stop $mondev"
+	$monstop
+	clear
+	echo "STARTER NETWORKMANAGER: /usr/bin/NetworkManager"
+	runnm="sudo /usr/bin/NetworkManager"
+	$runnm
+	clear
+	echo "NETWORKMANAGER AKTIVERES: SYSTEMCTL"
+	startnm="sudo systemctl enable NetworkManager"
+	$startnm
+	clear
+	if [ "$meth" = "h1" ]; then
+		hcnorule
+	elif [ "$meth" = "h2" ]; then
+		hcrule
+	elif [ "$meth" = "ac" ]; then
+		aircrack
+	fi
+}
+
+	#################### CRACK MED HASHCAT ###################
+hcrule(){
+	clear
+	echo "VÆLG EN AF DINE REGEL LISTER (*.rule):"
+	echo ""
+	lsrules="ls -f ${HOME}/rules"
+	$lsrules
+	echo ""
+	read -p "INDTAST REGELSÆTTETS FILNAVN (${HOME}/rules/) " rulefile
+	rule="${HOME}/rules/${rulefile}" 
+	if [[ -f "$rule" ]]; then
+		rulecrack
+	else
+		hcrule
+	fi
+}
+
+rulecrack(){
+	wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
+	$wpaclean
+	hashconvert="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
+	$hashconvert
+	hccrack="sudo hashcat -m 2500 -r $rule ${hndtryk}.hccapx $dictpath -D 1,2 --force"
+	$hccrack
+	cleanfiles="rm ${hndtryk}*.*"
+	echo ""
+	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
+	echo ""
+	$cleanfiles
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+
+hcnorule(){
+	clear
+	wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
+	$wpaclean
+	hashconvert="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
+	$hashconvert
+	hccrack="sudo hashcat -m 2500 -a 0 ${hndtryk}.hccapx $dictpath -D 1,2 --force"
+	$hccrack
+	cleanfiles="rm ${hndtryk}*.*"
+	echo ""
+	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
+	echo ""
+	$cleanfiles
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+
+	#################### CRACK MED AIRCRACK-NG #################
+aircrack(){
+	clear
+	crackbssid="sudo aircrack-ng -w $dictpath -b $bssid ${hndtryk}-01.cap"
+	$crackbssid
+	cleanfiles="rm ${hndtryk}*.*"
+	echo ""
+	echo "(!) VÆRD OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
+	echo ""
+	$cleanfiles
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+
+	     ################################################
+	################### NORMALE NETVÆRKSFUNKTIONER ############
+udkig(){
+	clear
+	echo $os
+	echo ""
+	$scan
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+       	
+}
+opstartsforb(){
+	clear
+	echo $os
+	echo""
+	$scan 
+	read -p "SSID " ssid
+	read -p "ADGANGSKODE " wpa
+	read -p "KALDENAVN " conname
+	firstcon="nmcli d wifi c $ssid password $wpa"
+	$firstcon
+	newwifi="nmcli c add type wifi ssid $ssid connection.autoconnect yes con-name $conname"
+	$newwifi
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+midlforb(){
+	clear
+	echo $os
+	echo ""
+	$scan 
+	read -p "SSID " ssid
+	read -p "ADGANGSKODE " wpa
+	firstcon="nmcli d wifi c $ssid password $wpa"
+	$firstcon
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+fjernforb(){
+	clear
+	echo $os
+	echo ""
+	curconf="nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s" 
+	$curconf
+	read -p "NAVNET PÅ FORBINDELSEN TIL FJERNELSE " conname
+	delwifi="nmcli c delete $conname"
+	$delwifi
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+viskonf(){
+	clear
+	echo $os
+	echo ""
+	curconf="nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s"
+	$curconf
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+om(){
+	clear
+	echo $os
+	echo ""
+	echo "* INFO OG OG BETINGELSER FOR BRUG"
+	echo ""
+	echo "  GENEREL INFO OG BETINGELSER FOR BRUG"
+	echo "  (!) Dette tegn betyder at du skal være særlig opmærksom på at"
+	echo "      fodre skriptet med den korrekte info. Hvis den korrekte"
+	echo "      info ikke gives, kan det have konsekvenser for skriptets"
+	echo "      funktionalitet. DETTE SKRIPT ER STADIG I ALPHA TILSTAND"
+	echo "      og derfor ikke helt færdigskrevet."
+	echo ""
+	echo "  OM NETTO OG BETINGELSER FOR BRUG"
+	echo "  Netto er et bash-skript skrevet i sommeren 2020 i forbindelse"
+	echo "  med en Arch Linux installation. Formålet er at give migselv"
+	echo "  (tak skal du have) adgang til internettet. Skulle du af den"
+	echo "  ene, eller den anden årsag være kommet i besiddelse af skriptet,"
+	echo "  er al brug på eget ansvar. Jeg kan ikke stilles til regnskab for"
+	echo "  din brug af dette skript. Jeg fralægger mig alt ansvar for skade"
+        echo "  eller krænkelse som skriptet måtte forvolde dit eller andres"
+	echo "  computersystem, netværk eller privatliv. Dette skript indeholder"
+	echo "  open source software der er tiltænkt til sikkerhedsvurdering af"
+	echo "  netværk. Du bør altid sikre samtykke før disse software benyttes"
+	echo "  på fremmede netværk."
+	echo ""
+	echo "* INSTALLATION"
+	echo ""
+	echo "  - VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER"
+	echo ""
+	echo "    NØDVENDIG PAKKE:"
+	echo "    1. NetworkManager: nmcli"
+	echo ""
+	echo "  - VEDRØRENDE FUNKTIONEN: LÅSTE FORBINDELSER"
+	echo ""
+	echo "    REGELLISTER i mappen: /home/*BRUGER*/rules/"
+	echo "    ORDBØGER i mappen: /home/*BRUGER*/dicts/"
+	echo ""
+	echo "    NØDVENDIGE PAKKER:"
+	echo "    2. Aircrack-ng og/eller Hashcat"
+	echo "    3. <AIRCRACK/HASHCAT> ifconfig"
+	echo "    4. <AIRCRACK/HASHCAT> usbutils: lsusb"
+	echo "    5. <HASHCAT> intel-compute-runtime (OpenCL driver)"
+	echo "       andre systemer: AMD opencl driver, NVIDIA opencl driver"
+	echo "    6. <HASHCAT> opencl-headers"
+	echo ""
+	read -p "ENTER/RETUR FOR MENU "
+	menu
+}
+
+menu(){
+while :
+	do
+	clear
+	echo $os
+	echo ""
+	echo "<s> ........... VIS FORBINDELSER"
+	echo "<ac>........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
+	echo "<c> ........... FORBIND TIL NETVÆRKSFORBINDELSE"
+	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
+	echo "<log> ......... VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
+	echo "<niettrekvarte> FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
+	echo "<q> ........... AFSLUT"
+	echo ""
+	echo "<about> ... (!) OM SKRIPTET, LÆS FØR BRUG"
+	if [ ! -z "$menuflag" ]; then
+		echo ""
+		echo "(!)"
+		echo $menuflag
+		echo ""
+	fi
+	read -p "KOMMANDO " opt	
+		case $opt in
+		[s] | [S]) 
+			udkig
+			clear
+			echo $os
+			echo ""
+			;;
+		[ac] | [AC] | [Ac])
+			opstartsforb
+			clear
+	 		echo $os
+			echo ""
+			;;
+		[c] | [C])
+			midlforb
+			clear
+			echo $os
+			echo ""
+			;;
+		[d] | [D])
+			fjernforb
+			clear
+			echo $os
+			echo ""
+			;;
+		[log] | [LOG] | [Log])
+			viskonf
+			clear
+			echo $os
+			echo ""
+			;;
+		[about] | [ABOUT] | [About])
+			om
+			clear
+			echo $os
+			echo ""
+			;;
+		[niettrekvarte] | [NIETTREKVARTE] | [Niettrekvarte])
+			crack
+			clear
+			echo $os
+			echo ""
+			;;
+		[q] | [Q])
+			exit
+			;;
+		*)
+			menuflag="KOMMANDOEN BLEV IKKE GENKENDT. Indtast indholdet mellem <*> uden tegnene <>. I sÆrlIgE tilfælde skelnes mellem store og små bogstaver."
+			clear
+			echo $os
+			echo ""
+		esac
+	done
+	
+}
+
+	######################################
+	#####   PROGRAMMER STARTER HER   #####
+	################# MENU ###############
+menu
+exit
