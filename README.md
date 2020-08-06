@@ -8,4 +8,4 @@ FOR AT BENYTTE NETTO's BASIS FUNKTIONER MÅ NETWORKMANAGER (NMCLI) VÆRE INSTALL
 INSTALLATION.
 For at installere, kør ./install.sh i terminalen. Netto kopieres til "/usr/bin/netto" og skriptet kan køres fra terminalen ved brug af kommandoen "netto".
 Installationsfilen beretter også om hvilke pakker systemet mangler for, at Netto er fuldt funktionsdygtig. Nogen opsætning af Hashcat kan være nødvendig iht. dit
-systems specificationer.
+systems specifikationer.
