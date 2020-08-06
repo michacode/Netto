@@ -8,7 +8,7 @@ install=0
 clear
 echo "NETTO INSTALLER (ALPHA 0.10)"
 echo ""
-(sudo cp -u -v netto /usr/bin/netto)
+(sudo cp -i  -v netto /usr/bin/netto)
 echo ""
 echo "DETTE SKRIPTS FUNKTIONALITET ER BASERET PÅ NETWORKMANAGER (nmcli)."
 echo "HVIS NETWORKMANAGER IKKE ER DIN PRIMÆRE NETVÆRKSDRIVER, VIL DELE"

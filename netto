@@ -406,7 +406,7 @@ while :
 			echo $os
 			echo ""
 			;;
-		[ac] | [AC] | [Ac])
+		"ac" | "AC" | "Ac")
 			opstartsforb
 			clear
 	 		echo $os
@@ -424,19 +424,19 @@ while :
 			echo $os
 			echo ""
 			;;
-		[log] | [LOG] | [Log])
+		"log" | "LOG" | "Log")
 			viskonf
 			clear
 			echo $os
 			echo ""
 			;;
-		[about] | [ABOUT] | [About])
+		"about" | "ABOUT" | "About")
 			om
 			clear
 			echo $os
 			echo ""
 			;;
-		[niettrekvarte] | [NIETTREKVARTE] | [Niettrekvarte])
+		"niettrekvarte" | "NIETTREKVARTE" | "Niettrekvarte")
 			crack
 			clear
 			echo $os
