@@ -8,6 +8,7 @@ conname=''
 mon=''
 iwconfig=''
 ok=''
+opt=''
 dictpath=''
 bssidtocrack=''
 bssid=''
@@ -16,12 +17,15 @@ crackbssid=''
 phy_line=$(mktemp)
 wifi_dev=$(mktemp)
 mondevice=$(mktemp)
+ovpnindh=$(mktemp)
+vpnmenuselect=$(mktemp)
 dev=''
 dict=''
 dictpath=''
 mondev=''
 rule=''
-os="NETTO (Alpha vers. 0.10)"
+valg=''
+os="NETTO (Alpha vers. 0.23)"
 
 	############################################################
 	######################## Funktioner ########################
@@ -304,6 +308,75 @@ midlforb(){
 	read -p "ENTER/RETUR FOR MENU "
 	menu
 }
+openvpn(){
+	clear
+	echo $os
+	echo ""
+	echo ""
+	echo "VÆLG TEKSTFILEN MED BRUGERNAVN OG ADGANGSKODE:"
+	echo""
+	cmdvpnkey="ls -f /etc/openvpn/*.txt"
+	$cmdvpnkey
+	echo ""
+	read -p "SKRIV FILENS NAVN " pass
+	passpath="/etc/openvpn/${pass}"
+	echo $passpath
+	if [[ -f "$passpath" ]]; then
+		vpnstart
+	else
+		openvpn
+	fi
+}
+vpnstart(){
+	clear
+	echo $os
+	echo ""
+	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONER (*.ovpn/*.conf):"
+	echo ""
+	count=0
+	cmdovpn="ls -f /etc/openvpn/*.ovpn"
+	cmdconf="ls -f /etc/openvpn/*.conf"
+		# Skriver output med indhold til tempfil
+		$cmdovpn>${ovpnindh}
+		$cmdconf>>${ovpnindh}
+	# Skanner indholdet af tempfil og laver ny med 1=*,2=*...
+	while read index;
+		do
+		for ovpnfiler in $index; do
+			((count++))
+			echo "${count}=${ovpnfiler}" >> ${vpnmenuselect}
+		done
+	done<${ovpnindh}
+	# Opstiller menuen
+	(cat $vpnmenuselect)
+	echo ""
+	echo "(!) AFLSUT: CTRL+C. FUNKTIONEN VPN ER IKKE FÆRDIG. TODO:"
+	echo "    Oprette password fil. Afslutte forbindelse. Æstetik."
+	echo ""
+	read -p "SKRIV NUMMERET PÅ STIGEN TIL FILEN " vpnvalg
+	# Skanner den nye tempfil for brugerens input
+	while read line;
+	do
+		for valg in $line
+		do
+			if [[ "${valg}" = "${vpnvalg}="* ]]; then
+				# Info starter efter lighedstegnet				
+			       	valgtvpn=${valg#*=}
+		fi
+		done
+	done<${vpnmenuselect}
+	# Gør commandoen til start af vpn forbindelse klar
+	(cd /etc/openvpn)
+	runvpn="sudo openvpn --config $valgtvpn --auth-user-pass $passpath"
+	# Starter vpn forbindelse
+	rm $ovpnindh
+	rm $vpnmenuselect
+	(sudo killall openvpn)
+	$runvpn
+	read -p "ENTER/RETUR FOR MENU "
+	count=0
+	menu
+}
 fjernforb(){
 	clear
 	echo $os
@@ -355,10 +428,20 @@ om(){
 	echo ""
 	echo "* INSTALLATION"
 	echo ""
+	echo "    (!) ALPHA: DER ER STADIG MEGET AT GØRE."
+	echo ""
 	echo "  - VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER"
 	echo ""
 	echo "    NØDVENDIG PAKKE:"
-	echo "    1. NetworkManager: nmcli"
+	echo "    1. networkmanager: nmcli"
+	echo "    2. openvpn"
+	echo ""
+	echo "    OPENVPN FILER i mappen: /etc/openvpn/"
+	echo "    - 1. ex.: bruger og adgangskode i *.txt."
+	echo "      Format: oIJOAJDuius98376sF7fffy"
+	echo "              joisadjoiJIOJD897sha7od"
+	echo "      Hvor første linie er bruger og anden linie er adgangskoden."
+	echo "    - 2. ex.: vpn-konfiguration.vpn.service.ovpn eller *.conf"
 	echo ""
 	echo "  - VEDRØRENDE FUNKTIONEN: LÅSTE FORBINDELSER"
 	echo ""
@@ -366,12 +449,12 @@ om(){
 	echo "    ORDBØGER i mappen: /home/*BRUGER*/dicts/"
 	echo ""
 	echo "    NØDVENDIGE PAKKER:"
-	echo "    2. Aircrack-ng og/eller Hashcat"
-	echo "    3. <AIRCRACK/HASHCAT> ifconfig"
-	echo "    4. <AIRCRACK/HASHCAT> usbutils: lsusb"
-	echo "    5. <HASHCAT> intel-compute-runtime (OpenCL driver)"
+	echo "    3. aircrack-ng og/eller hashcat"
+	echo "    4. <AIRCRACK/HASHCAT> ifconfig"
+	echo "    5. <AIRCRACK/HASHCAT> usbutils: lsusb"
+	echo "    6. <HASHCAT> intel-compute-runtime (OpenCL driver)"
 	echo "       andre systemer: AMD opencl driver, NVIDIA opencl driver"
-	echo "    6. <HASHCAT> opencl-headers"
+	echo "    7. <HASHCAT> opencl-headers"
 	echo ""
 	read -p "ENTER/RETUR FOR MENU "
 	menu
@@ -386,6 +469,7 @@ while :
 	echo "<s> ........... VIS FORBINDELSER"
 	echo "<ac>........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
 	echo "<c> ........... FORBIND TIL NETVÆRKSFORBINDELSE"
+	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
 	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
 	echo "<log> ......... VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
 	echo "<niettrekvarte> FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
@@ -418,6 +502,12 @@ while :
 			echo $os
 			echo ""
 			;;
+		"vpn" | "Vpn" | "VPN")
+			openvpn
+			clear
+			echo $os
+			echo ""
+			;;
 		[d] | [D])
 			fjernforb
 			clear
@@ -443,7 +533,8 @@ while :
 			echo ""
 			;;
 		[q] | [Q])
-			exit
+			(clear && bash)
+			exit			
 			;;
 		*)
 			menuflag="KOMMANDOEN BLEV IKKE GENKENDT. Indtast indholdet mellem <*> uden tegnene <>. I sÆrlIgE tilfælde skelnes mellem store og små bogstaver."

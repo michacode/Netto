@@ -6,7 +6,7 @@
 flag=0
 install=0
 clear
-echo "NETTO INSTALLER (ALPHA 0.10)"
+echo "NETTO INSTALLER (ALPHA 0.23)"
 echo ""
 (sudo cp -i  -v netto /usr/bin/netto)
 echo ""
@@ -20,6 +20,11 @@ echo ""
 if ! command -v nmcli &> /dev/null; then
 	echo "(!) NETWORKMANAGER IKKE INSTALLERET ELLER IKKE TILSTRÆKKELIGT OPSAT."
 	echo "(!) Skriptet har muligvis meget begrænset funktion."
+	echo ""
+	flag=$((flag+1))
+elif ! command -v openvpn &> /dev/null; then
+	echo "(!) OPENVPN IKKE INSTALLERET ELLER IKKE TILSTRÆKKELIGT OPSAT."
+	echo "    Skriptets funktion er begrænset."
 	echo ""
 	flag=$((flag+1))
 elif ! command -v aircrack-ng &> /dev/null; then
@@ -52,11 +57,15 @@ elif [ $flag == 0 ]; then
 fi
 pathd="${HOME}/dicts"
 pathr="${HOME}/rules"
+patov="/etc/openvpn"
 if [ ! -d $pathd ]; then
 	echo "(!) ORDBØGER RELATERET TIL AIRCRACK-NG OG HASHCAT PLACERES I $pathd."
 	echo ""
 elif [ ! -d $pathr ]; then
 	echo "(!) REGEL LISTER RELATERET TIL AIRCRACK-NG OG HASHCAT PLACERES I $pathr."
+	echo ""
+elif [ ! -d $patov ]; then
+	echo "(!) OPENVPN KONFIGURATIONS -OG ADGANGSKODEFILER PLACERES I $pathr."
 	echo ""
 fi
 exit
