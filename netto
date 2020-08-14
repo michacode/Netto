@@ -25,7 +25,7 @@ dictpath=''
 mondev=''
 rule=''
 valg=''
-os="NETTO (Alpha vers. 0.23)"
+os="NETTO (Alpha vers. 0.30)"
 
 	############################################################
 	######################## Funktioner ########################
@@ -367,7 +367,7 @@ vpnstart(){
 	done<${vpnmenuselect}
 	# Gør commandoen til start af vpn forbindelse klar
 	(cd /etc/openvpn)
-	runvpn="sudo openvpn --config $valgtvpn --auth-user-pass $passpath"
+	runvpn="sudo openvpn --config $valgtvpn --auth-user-pass $passpath --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre"
 	# Starter vpn forbindelse
 	rm $ovpnindh
 	rm $vpnmenuselect
@@ -435,8 +435,21 @@ om(){
 	echo "    NØDVENDIG PAKKE:"
 	echo "    1. networkmanager: nmcli"
 	echo "    2. openvpn"
+	echo "    3. openresolv(?)"
+	echo "    4. openvpn-update-systemd-openresolv(?)"
+	echo "       Du har også brug for /etc/openvpn/client/client.conf"
+	echo "       Indeholdende:"
+	echo "			client" 
+	echo "			remote example.com 1194 udp"
+	echo "			.."
+	echo "			script-security 2"
+	echo "			setenv PATH /usr/bin"
+	echo "			up /etc/openvpn/scripts/update-systemd-resolved"
+	echo "			down /etc/openvpn/scripts/update-systemd-resolved"
+	echo "			down-pre"
+	echo "			dhcp-option DOMAIN-ROUTE"
 	echo ""
-	echo "    OPENVPN FILER i mappen: /etc/openvpn/"
+	echo "    OPENVPN KONF. FILER i mappen: /etc/openvpn/"
 	echo "    - 1. ex.: bruger og adgangskode i *.txt."
 	echo "      Format: oIJOAJDuius98376sF7fffy"
 	echo "              joisadjoiJIOJD897sha7od"
@@ -449,12 +462,12 @@ om(){
 	echo "    ORDBØGER i mappen: /home/*BRUGER*/dicts/"
 	echo ""
 	echo "    NØDVENDIGE PAKKER:"
-	echo "    3. aircrack-ng og/eller hashcat"
-	echo "    4. <AIRCRACK/HASHCAT> ifconfig"
-	echo "    5. <AIRCRACK/HASHCAT> usbutils: lsusb"
-	echo "    6. <HASHCAT> intel-compute-runtime (OpenCL driver)"
+	echo "    5. aircrack-ng og/eller hashcat"
+	echo "    6. <AIRCRACK/HASHCAT> ifconfig"
+	echo "    7. <AIRCRACK/HASHCAT> usbutils: lsusb"
+	echo "    8. <HASHCAT> intel-compute-runtime (OpenCL driver)"
 	echo "       andre systemer: AMD opencl driver, NVIDIA opencl driver"
-	echo "    7. <HASHCAT> opencl-headers"
+	echo "    9. <HASHCAT> opencl-headers"
 	echo ""
 	read -p "ENTER/RETUR FOR MENU "
 	menu
