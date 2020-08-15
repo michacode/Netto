@@ -6,7 +6,7 @@
 flag=0
 install=0
 clear
-echo "NETTO INSTALLER (ALPHA 0.23)"
+echo "# NETTO INSTALLER - version 0.24a"
 echo ""
 (sudo cp -i  -v netto /usr/bin/netto)
 echo ""

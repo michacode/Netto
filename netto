@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+###
+### SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING I KONFIGURATIONSFIL FOR AT GÅ I BETA
+###
+
 scan="nmcli -f IN-USE,SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE,CHAN dev wifi"
 ssid=''
 wpa=''
@@ -25,7 +29,7 @@ dictpath=''
 mondev=''
 rule=''
 valg=''
-os="NETTO (Alpha vers. 0.30)"
+os="# NETTO - version 0.32a"
 
 	############################################################
 	######################## Funktioner ########################
@@ -49,20 +53,31 @@ crack(){
 	done<${phy_line}
 	rm $phy_line
 	rm $wifi_dev
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####      S T O P P E R  N E T W O R K M A N A G E R  I  S Y S T E M C T L     #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	echo "STOPPER NETWORKMANAGER: SYSTEMCTL"
 	killnm="sudo systemctl stop NetworkManager"
 	$killnm
 	clear
-	echo "AIRCRACK-NG STARTER: CHECK AND KILL"
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "##### A I R C R A C K - N G  T J E K K E R  O G  D R Æ B E R  P R O C E S S E R #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	monkill="sudo airmon-ng check kill"
 	$monkil
 	clear
-	echo "AIRCRACK-NG STARTER: MONITOR"
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####     A I R C R A C K - N G  S T A R T E R  M O N I T O R E R I N G      #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	monstart="sudo airmon-ng start $dev"
 	$monstart
 	clear
-	echo "FINDER MONITORERINGSUDSTYR: IFCONFIG"
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####      F I N D E R  U D S T Y R E T  T I L  M O N I T O R E R I N G      #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	ifconfig="ifconfig"
 	$ifconfig > ${mondevice}
 	while read line; do
@@ -182,15 +197,27 @@ crackdict(){
 paybill(){
 	rm $mondevice
 	clear
-	echo "STOPPER MONITORERING PÅ: $mondev"
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####                 S T O P P E R  M O N I T O R E R I N G                 #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
+	echo "> STOPPES PÅ $mondev"
 	monstop="sudo airmon-ng stop $mondev"
 	$monstop
 	clear
-	echo "STARTER NETWORKMANAGER: /usr/bin/NetworkManager"
+	echo ""
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####               N E T W O R K M A N A G E R  S T A R T E S               #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	runnm="sudo /usr/bin/NetworkManager"
 	$runnm
 	clear
-	echo "NETWORKMANAGER AKTIVERES: SYSTEMCTL"
+	echo ""
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####  N E T W O R K M A N A G E R  A K T I V E R E S  I  S Y S T E M C T L  #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	startnm="sudo systemctl enable NetworkManager"
 	$startnm
 	clear
@@ -308,12 +335,14 @@ midlforb(){
 	read -p "ENTER/RETUR FOR MENU "
 	menu
 }
+	# Mangler mulighed for at oprette passwordtxt
+ # Mangler funktion der tjekker om der er forbindelse til internettet.
+
 openvpn(){
 	clear
 	echo $os
 	echo ""
-	echo ""
-	echo "VÆLG TEKSTFILEN MED BRUGERNAVN OG ADGANGSKODE:"
+	echo "VÆLG TEKSTFILEN INDEHOLDENDE BRUGERNAVN OG ADGANGSKODE:"
 	echo""
 	cmdvpnkey="ls -f /etc/openvpn/*.txt"
 	$cmdvpnkey
@@ -331,7 +360,7 @@ vpnstart(){
 	clear
 	echo $os
 	echo ""
-	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONER (*.ovpn/*.conf):"
+	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONSFILER (*.ovpn ELLER *.conf):"
 	echo ""
 	count=0
 	cmdovpn="ls -f /etc/openvpn/*.ovpn"
@@ -344,35 +373,44 @@ vpnstart(){
 		do
 		for ovpnfiler in $index; do
 			((count++))
-			echo "${count}=${ovpnfiler}" >> ${vpnmenuselect}
+			echo "<${count}>${ovpnfiler}" >> ${vpnmenuselect}
 		done
 	done<${ovpnindh}
 	# Opstiller menuen
 	(cat $vpnmenuselect)
 	echo ""
-	echo "(!) AFLSUT: CTRL+C. FUNKTIONEN VPN ER IKKE FÆRDIG. TODO:"
-	echo "    Oprette password fil. Afslutte forbindelse. Æstetik."
+	echo "(!) NÅR FORBINDELSEN ER OPRETTET AFBRYDES FORBINDELSEN VED AT TRYKKE CTRL-C"
 	echo ""
-	read -p "SKRIV NUMMERET PÅ STIGEN TIL FILEN " vpnvalg
+	read -p "SKRIV NUMMERET FØR STIGEN TIL FILEN " vpnvalg
 	# Skanner den nye tempfil for brugerens input
 	while read line;
 	do
 		for valg in $line
 		do
-			if [[ "${valg}" = "${vpnvalg}="* ]]; then
+			if [[ "${valg}" = "<${vpnvalg}>"* ]]; then
 				# Info starter efter lighedstegnet				
-			       	valgtvpn=${valg#*=}
+			       	valgtvpn=${valg#*>}
 		fi
 		done
 	done<${vpnmenuselect}
-	# Gør commandoen til start af vpn forbindelse klar
+	# Gør kommandoen til start af vpn forbindelse klar
+	echo ""
+	echo "DER KRÆVES SUPERBRUGER TILLADELSE"
+	echo ""
 	(cd /etc/openvpn)
 	runvpn="sudo openvpn --config $valgtvpn --auth-user-pass $passpath --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre"
 	# Starter vpn forbindelse
 	rm $ovpnindh
 	rm $vpnmenuselect
+	echo "> SØRGER FOR AT DER IKKE KØRER NOGLE OPENVPN PROCESSER"
 	(sudo killall openvpn)
+	echo ""
+	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	echo "#####  F O R S Ø G E R  A T  S T A R T E  V P N - F O B I N D E L S E  #####"
+	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo ""
 	$runvpn
+	echo ""
 	read -p "ENTER/RETUR FOR MENU "
 	count=0
 	menu
@@ -404,70 +442,81 @@ om(){
 	clear
 	echo $os
 	echo ""
-	echo "* INFO OG OG BETINGELSER FOR BRUG"
+	echo "<> INFO OG OG BETINGELSER FOR BRUG"
 	echo ""
-	echo "  GENEREL INFO OG BETINGELSER FOR BRUG"
+	echo "  ~ GENEREL INFO OG BETINGELSER FOR BRUG"
+	echo ""
 	echo "  (!) Dette tegn betyder at du skal være særlig opmærksom på at"
 	echo "      fodre skriptet med den korrekte info. Hvis den korrekte"
 	echo "      info ikke gives, kan det have konsekvenser for skriptets"
 	echo "      funktionalitet. DETTE SKRIPT ER STADIG I ALPHA TILSTAND"
 	echo "      og derfor ikke helt færdigskrevet."
 	echo ""
-	echo "  OM NETTO OG BETINGELSER FOR BRUG"
-	echo "  Netto er et bash-skript skrevet i sommeren 2020 i forbindelse"
-	echo "  med en Arch Linux installation. Formålet er at give migselv"
-	echo "  (tak skal du have) adgang til internettet. Skulle du af den"
-	echo "  ene, eller den anden årsag være kommet i besiddelse af skriptet,"
-	echo "  er al brug på eget ansvar. Jeg kan ikke stilles til regnskab for"
-	echo "  din brug af dette skript. Jeg fralægger mig alt ansvar for skade"
-        echo "  eller krænkelse som skriptet måtte forvolde dit eller andres"
-	echo "  computersystem, netværk eller privatliv. Dette skript indeholder"
-	echo "  open source software der er tiltænkt til sikkerhedsvurdering af"
-	echo "  netværk. Du bør altid sikre samtykke før disse software benyttes"
-	echo "  på fremmede netværk."
+	echo " ~ OM NETTO OG BETINGELSER FOR BRUG"
 	echo ""
-	echo "* INSTALLATION"
+	echo "    Netto er et bash-skript skrevet i sommeren 2020 i forbindelse"
+	echo "    med en Arch Linux installation. Formålet er at give migselv"
+	echo "    (tak skal du have) adgang til internettet. Skulle du af den"
+	echo "    ene, eller den anden årsag være kommet i besiddelse af skriptet,"
+	echo "    er al brug på eget ansvar. Jeg kan ikke stilles til regnskab for"
+	echo "    din brug af dette skript. Jeg fralægger mig alt ansvar for skade"
+    echo "    eller krænkelse som skriptet måtte forvolde dit eller andres"
+	echo "    computersystem, netværk eller privatliv. Dette skript indeholder"
+	echo "    open source software der er tiltænkt til sikkerhedsvurdering af"
+	echo "    netværk. Du bør altid sikre samtykke før disse software benyttes"
+	echo "    på fremmede netværk."
+	echo ""
+	echo "<> INSTALLATION"
 	echo ""
 	echo "    (!) ALPHA: DER ER STADIG MEGET AT GØRE."
 	echo ""
-	echo "  - VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER"
+	echo "  ~ VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER"
 	echo ""
-	echo "    NØDVENDIG PAKKE:"
-	echo "    1. networkmanager: nmcli"
-	echo "    2. openvpn"
-	echo "    3. openresolv(?)"
-	echo "    4. openvpn-update-systemd-openresolv(?)"
+	echo "   - PAKKER OG OPSÆTNING"
+	echo "     NØDVENDIGE FOR BASALE NETVÆRKSFUNKTIONER"
+	echo ""
+	echo "   1. networkmanager ( nmcli )"
+	echo ""
+	echo "   2. openvpn"
+	echo "   3. openresolv"
+	echo "   4. openvpn-update-systemd-openresolv"
 	echo "       Du har også brug for /etc/openvpn/client/client.conf"
 	echo "       Indeholdende:"
-	echo "			client" 
-	echo "			remote example.com 1194 udp"
-	echo "			.."
-	echo "			script-security 2"
-	echo "			setenv PATH /usr/bin"
-	echo "			up /etc/openvpn/scripts/update-systemd-resolved"
-	echo "			down /etc/openvpn/scripts/update-systemd-resolved"
-	echo "			down-pre"
-	echo "			dhcp-option DOMAIN-ROUTE"
+	echo " ______                                              _____"
+	echo "|1|	client                                              |" 
+	echo "|2|	remote example.com 1194 udp                         |"
+	echo "|3|	.."
+	echo "|4|	script-security 2"
+	echo "|5|	setenv PATH /usr/bin"
+	echo "|6|	up /etc/openvpn/scripts/update-systemd-resolved"
+	echo "|7|	down /etc/openvpn/scripts/update-systemd-resolved"
+	echo "|8|	down-pre"
+	echo "|9|	dhcp-option DOMAIN-ROUTE"
+	echo "|_|___                        __            _____"
 	echo ""
-	echo "    OPENVPN KONF. FILER i mappen: /etc/openvpn/"
-	echo "    - 1. ex.: bruger og adgangskode i *.txt."
-	echo "      Format: oIJOAJDuius98376sF7fffy"
-	echo "              joisadjoiJIOJD897sha7od"
-	echo "      Hvor første linie er bruger og anden linie er adgangskoden."
-	echo "    - 2. ex.: vpn-konfiguration.vpn.service.ovpn eller *.conf"
+	echo "       OPENVPN KONF.-FILER (*.ovpn ELLER *.conf) PLACERES I:" 
+	echo "          /etc/openvpn/"
 	echo ""
-	echo "  - VEDRØRENDE FUNKTIONEN: LÅSTE FORBINDELSER"
+	echo "       DET SAMME GÆLDER *.txt INDEHOLDENDE BRUGER OG ADGANGSKODE:"
+	echo "                                                ______________________"
+	echo "       Følgende format understøttes af OpenVPN:|1|oIJOBRiuGERsF7NAVN0   "
+	echo "       E   K   S   E   M   P   E   L           |2|djoiADGJA97NGasKodE   |"
+	echo "                                               |_|       _____        __|"
+	echo "       Første linie er bruger og anden linie er adgangskoden . . ."
 	echo ""
-	echo "    REGELLISTER i mappen: /home/*BRUGER*/rules/"
-	echo "    ORDBØGER i mappen: /home/*BRUGER*/dicts/"
+	echo "  - PAKKER OG OPSÆTNING"
+	echo "    NØDVENDIGE FOR NETVÆRKSFUNTIONER VEDR. LÅSTE FORBINDELSER"
 	echo ""
-	echo "    NØDVENDIGE PAKKER:"
+	echo "  ~ NØDVENDIGE PAKKER:"
 	echo "    5. aircrack-ng og/eller hashcat"
 	echo "    6. <AIRCRACK/HASHCAT> ifconfig"
 	echo "    7. <AIRCRACK/HASHCAT> usbutils: lsusb"
 	echo "    8. <HASHCAT> intel-compute-runtime (OpenCL driver)"
-	echo "       andre systemer: AMD opencl driver, NVIDIA opencl driver"
+	echo "       non-intel systemer bruger: AMD opencl driver, NVIDIA opencl driver"
 	echo "    9. <HASHCAT> opencl-headers"
+	echo ""
+	echo "    REGELLISTER I MAPPEN: /home/*BRUGER*/rules/"
+	echo "    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/"
 	echo ""
 	read -p "ENTER/RETUR FOR MENU "
 	menu
@@ -479,7 +528,7 @@ while :
 	clear
 	echo $os
 	echo ""
-	echo "<s> ........... VIS FORBINDELSER"
+	echo "<f> ........... VIS FORBINDELSER"
 	echo "<ac>........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
 	echo "<c> ........... FORBIND TIL NETVÆRKSFORBINDELSE"
 	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
@@ -489,6 +538,7 @@ while :
 	echo "<q> ........... AFSLUT"
 	echo ""
 	echo "<about> ... (!) OM SKRIPTET, LÆS FØR BRUG"
+	echo ""
 	if [ ! -z "$menuflag" ]; then
 		echo ""
 		echo "(!)"
@@ -497,7 +547,7 @@ while :
 	fi
 	read -p "KOMMANDO " opt	
 		case $opt in
-		[s] | [S]) 
+		[f] | [F]) 
 			udkig
 			clear
 			echo $os
