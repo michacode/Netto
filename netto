@@ -440,86 +440,86 @@ viskonf(){
 }
 om(){
 	clear
-	echo $os
-	echo ""
-	echo "<> INFO OG OG BETINGELSER FOR BRUG"
-	echo ""
-	echo "  ~ GENEREL INFO OG BETINGELSER FOR BRUG"
-	echo ""
-	echo "  (!) Dette tegn betyder at du skal være særlig opmærksom på at"
-	echo "      fodre skriptet med den korrekte info. Hvis den korrekte"
-	echo "      info ikke gives, kan det have konsekvenser for skriptets"
-	echo "      funktionalitet. DETTE SKRIPT ER STADIG I ALPHA TILSTAND"
-	echo "      og derfor ikke helt færdigskrevet."
-	echo ""
-	echo " ~ OM NETTO OG BETINGELSER FOR BRUG"
-	echo ""
-	echo "    Netto er et bash-skript skrevet i sommeren 2020 i forbindelse"
-	echo "    med en Arch Linux installation. Formålet er at give migselv"
-	echo "    (tak skal du have) adgang til internettet. Skulle du af den"
-	echo "    ene, eller den anden årsag være kommet i besiddelse af skriptet,"
-	echo "    er al brug på eget ansvar. Jeg kan ikke stilles til regnskab for"
-	echo "    din brug af dette skript. Jeg fralægger mig alt ansvar for skade"
-    echo "    eller krænkelse som skriptet måtte forvolde dit eller andres"
-	echo "    computersystem, netværk eller privatliv. Dette skript indeholder"
-	echo "    open source software der er tiltænkt til sikkerhedsvurdering af"
-	echo "    netværk. Du bør altid sikre samtykke før disse software benyttes"
-	echo "    på fremmede netværk."
-	echo ""
-	echo "<> INSTALLATION"
-	echo ""
-	echo "    (!) ALPHA: DER ER STADIG MEGET AT GØRE."
-	echo ""
-	echo "  ~ VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER"
-	echo ""
-	echo "   - PAKKER OG OPSÆTNING"
-	echo "     NØDVENDIGE FOR BASALE NETVÆRKSFUNKTIONER"
-	echo ""
-	echo "   1. networkmanager ( nmcli )"
-	echo ""
-	echo "   2. openvpn"
-	echo "   3. openresolv"
-	echo "   4. openvpn-update-systemd-openresolv"
-	echo "       Du har også brug for /etc/openvpn/client/client.conf"
-	echo "       Indeholdende:"
-	echo " ______                                              _____"
-	echo "|1|	client                                              |" 
-	echo "|2|	remote example.com 1194 udp                         |"
-	echo "|3|	.."
-	echo "|4|	script-security 2"
-	echo "|5|	setenv PATH /usr/bin"
-	echo "|6|	up /etc/openvpn/scripts/update-systemd-resolved"
-	echo "|7|	down /etc/openvpn/scripts/update-systemd-resolved"
-	echo "|8|	down-pre"
-	echo "|9|	dhcp-option DOMAIN-ROUTE"
-	echo "|_|___                        __            _____"
-	echo ""
-	echo "       OPENVPN KONF.-FILER (*.ovpn ELLER *.conf) PLACERES I:" 
-	echo "          /etc/openvpn/"
-	echo ""
-	echo "       DET SAMME GÆLDER *.txt INDEHOLDENDE BRUGER OG ADGANGSKODE:"
-	echo "                                                ______________________"
-	echo "       Følgende format understøttes af OpenVPN:|1|oIJOBRiuGERsF7NAVN0   "
-	echo "       E   K   S   E   M   P   E   L           |2|djoiADGJA97NGasKodE   |"
-	echo "                                               |_|       _____        __|"
-	echo "       Første linie er bruger og anden linie er adgangskoden . . ."
-	echo ""
-	echo "  - PAKKER OG OPSÆTNING"
-	echo "    NØDVENDIGE FOR NETVÆRKSFUNTIONER VEDR. LÅSTE FORBINDELSER"
-	echo ""
-	echo "  ~ NØDVENDIGE PAKKER:"
-	echo "    5. aircrack-ng og/eller hashcat"
-	echo "    6. <AIRCRACK/HASHCAT> ifconfig"
-	echo "    7. <AIRCRACK/HASHCAT> usbutils: lsusb"
-	echo "    8. <HASHCAT> intel-compute-runtime (OpenCL driver)"
-	echo "       non-intel systemer bruger: AMD opencl driver, NVIDIA opencl driver"
-	echo "    9. <HASHCAT> opencl-headers"
-	echo ""
-	echo "    REGELLISTER I MAPPEN: /home/*BRUGER*/rules/"
-	echo "    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/"
-	echo ""
+	echo "$os"
+	cat | less <<-TEKST
+	<> INFO OG OG BETINGELSER FOR BRUG
+	
+	  ~ GENEREL INFO OG BETINGELSER FOR BRUG
+	
+	  (!) Dette tegn betyder at du skal være særlig opmærksom på at
+	      fodre skriptet med den korrekte info. Hvis den korrekte
+	      info ikke gives, kan det have konsekvenser for skriptets
+	      funktionalitet. DETTE SKRIPT ER STADIG I ALPHA TILSTAND
+	      og derfor ikke helt færdigskrevet.
+	
+	 ~ OM NETTO OG BETINGELSER FOR BRUG
+	
+	    Netto er et bash-skript skrevet i sommeren 2020 i forbindelse
+	    med en Arch Linux installation. Formålet er at give migselv
+	    (tak skal du have) adgang til internettet. Skulle du af den
+	    ene, eller den anden årsag være kommet i besiddelse af skriptet,
+	    er al brug på eget ansvar. Jeg kan ikke stilles til regnskab for
+	    din brug af dette skript. Jeg fralægger mig alt ansvar for skade
+	    eller krænkelse som skriptet måtte forvolde dit eller andres
+	    computersystem, netværk eller privatliv. Dette skript indeholder
+	    open source software der er tiltænkt til sikkerhedsvurdering af
+	    netværk. Du bør altid sikre samtykke før disse software benyttes
+	    på fremmede netværk.
+	
+	<> INSTALLATION
+	
+	    (!) ALPHA: DER ER STADIG MEGET AT GØRE.
+	
+	  ~ VEDRØRENDE GENERELLE NETVÆRKSFORBINDELSER
+	
+	   - PAKKER OG OPSÆTNING
+	     NØDVENDIGE FOR BASALE NETVÆRKSFUNKTIONER
+	
+	   1. networkmanager ( nmcli )
+	
+	   2. openvpn
+	   3. openresolv
+	   4. openvpn-update-systemd-openresolv
+	       Du har også brug for /etc/openvpn/client/client.conf
+	       Indeholdende:
+	 ______                                              _____
+	|1|	client                                              |
+	|2|	remote example.com 1194 udp                         |
+	|3|	..
+	|4|	script-security 2
+	|5|	setenv PATH /usr/bin
+	|6|	up /etc/openvpn/scripts/update-systemd-resolved
+	|7|	down /etc/openvpn/scripts/update-systemd-resolved
+	|8|	down-pre
+	|9|	dhcp-option DOMAIN-ROUTE
+	|_|___                        __            _____
+	
+	       OPENVPN KONF.-FILER (*.ovpn ELLER *.conf) PLACERES I:
+	          /etc/openvpn/
+	
+	       DET SAMME GÆLDER *.txt INDEHOLDENDE BRUGER OG ADGANGSKODE:
+	                                                ______________________
+	       Følgende format understøttes af OpenVPN:|1|oIJOBRiuGERsF7NAVN0   
+	       E   K   S   E   M   P   E   L           |2|djoiADGJA97NGasKodE   |
+	                                               |_|       _____        __|
+	       Første linie er bruger og anden linie er adgangskoden . . .
+	
+	  - PAKKER OG OPSÆTNING
+	    NØDVENDIGE FOR NETVÆRKSFUNTIONER VEDR. LÅSTE FORBINDELSER
+	
+	  ~ NØDVENDIGE PAKKER:
+	    5. aircrack-ng og/eller hashcat
+	    6. <AIRCRACK/HASHCAT> ifconfig
+	    7. <AIRCRACK/HASHCAT> usbutils: lsusb
+	    8. <HASHCAT> intel-compute-runtime (OpenCL driver)
+	       non-intel systemer bruger: AMD opencl driver, NVIDIA opencl driver
+	    9. <HASHCAT> opencl-headers
+	
+	    REGELLISTER I MAPPEN: /home/*BRUGER*/rules/
+	    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/
+	
+	TEKST
 	read -p "ENTER/RETUR FOR MENU "
-	menu
 }
 
 menu(){
@@ -596,8 +596,8 @@ while :
 			echo ""
 			;;
 		[q] | [Q])
-			(clear && bash)
-			exit			
+			clear
+			exit 0
 			;;
 		*)
 			menuflag="KOMMANDOEN BLEV IKKE GENKENDT. Indtast indholdet mellem <*> uden tegnene <>. I sÆrlIgE tilfælde skelnes mellem store og små bogstaver."
