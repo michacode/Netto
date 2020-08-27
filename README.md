@@ -1,2 +1,0 @@
-# Netto
-Personal networking agent
