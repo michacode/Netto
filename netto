@@ -30,7 +30,7 @@ dictpath=''
 mondev=''
 rule=''
 valg=''
-os="# NETTO - version 0.45a"
+os="# NETTO - version 0.46a"
 
 	############################################################
 	######################## Funktioner ########################
@@ -299,35 +299,24 @@ opstartsforb(){
 	echo $os
   echo "OPRET NY AUTOMATISK FORBINDELSE"
 	echo 
-#	nmcli -f IN-USE,SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE,CHAN dev wifi
-#	echo
-#  read -p "SSID " ssid
-#	read -p "ADGANGSKODE " wpa
-#	read -p "KALDENAVN " conname
-#	nmcli d wifi c "$ssid" password "$wpa"
-#	nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
-#	echo 
-#	read -p "ENTER/RETUR FOR MENU "
-#udkig(){
-
-i=0
+  i=0
   nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
      for ssid in $line; do
         if [[ "$ssid" =~ "SSID:"* ]]; then
           ssid=$(echo $line | sed 's/SSID: //g')
- #        echo $ssid
+          navn=$ssid
           i=$((i+1))
-          echo "$i: $ssid"
+#          echo "$i: $ssid"
           array+=("${ssid}")
+        elif [[ "$ssid" =~ "BARS:"* ]]; then
+          bars=$(echo $line | sed 's/BARS: //g')
+          echo "$bars $i: $navn"
         fi
       done
-      echo $line
     done
     echo
     read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
- #echo ${array[((input-1))]}
  ssid=${array[((input-1))]}
- #echo "VALGTE: $ssid"
  read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
  read -p "FORBINDELSENS KALDENAVN " conname </dev/tty
  nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
@@ -342,32 +331,24 @@ midlforb(){
 	echo $os
   echo "OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
   echo
-#  nmcli -f SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE dev wifi 
-	#nmcli -f SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE dev wifi | awk '/WPA*/{print NR-1 ": " $0}'
-#  read -p "SSID " ssid
-#	read -p "ADGANGSKODE " wpa
-#	nmcli d wifi c "$ssid" password "$wpa"
-#	echo
-#	read -p "ENTER/RETUR FOR MENU "
-  
-i=0
+  i=0
   nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
      for ssid in $line; do
         if [[ "$ssid" =~ "SSID:"* ]]; then
           ssid=$(echo $line | sed 's/SSID: //g')
- #        echo $ssid
+          navn=$ssid
           i=$((i+1))
-          echo "$i: $ssid"
+#          echo "$i: $ssid"
           array+=("${ssid}")
+          elif [[ "$ssid" =~ "BARS:"* ]]; then
+          bars=$(echo $line | sed 's/BARS: //g')
+          echo "$bars $i: $navn"
         fi
       done
-      echo $line
     done
     echo
     read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
- #echo ${array[((input-1))]}
  ssid=${array[((input-1))]}
- #echo "VALGTE: $ssid"
  read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
  nmcli d wifi c "$ssid" password "$wpa"
 }
@@ -498,7 +479,7 @@ wifi_radio(){
   echo "TÆND ELLER SLUK WIFI"
   echo
   #Tjek om wifi er tændt eller slukket og giv modsat valg.
-  read -p "ON/OFF" on_off
+  read -p "" on_off
 }
 
 
