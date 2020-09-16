@@ -30,7 +30,7 @@ dictpath=''
 mondev=''
 rule=''
 valg=''
-os="# NETTO - version 0.46a"
+os="# NETTO - version 0.47a"
 
 	############################################################
 	######################## Funktioner ########################
@@ -92,7 +92,7 @@ niettrekvarte(){
 
 	##################### FIND PIBE OG GIV HÅNDTRYK ####################
 crackshake(){
-	getbssid="sudo airodump-ng $mondev"
+	getbssid="sudo airodump-ng --band abg $mondev" # --band a for 5ghz intet band argument 2ghz
 	clear
 	echo "(1/2) SKRIPTET STARTER NU AIRODUMP-NG. DER GENERERES EN LIST AF TILGÆNGELIGE NETVÆRK.   "
 	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES q-TASTEN TO GANGE."
