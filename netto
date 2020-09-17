@@ -30,7 +30,7 @@ dictpath=''
 mondev=''
 rule=''
 valg=''
-os="# NETTO - version 0.47a"
+os="# NETTO - version 0.50a"
 
 	############################################################
 	######################## Funktioner ########################
@@ -284,7 +284,7 @@ aircrack(){
 udkig(){
 	clear
 	echo $os
-	echo "FIND FORBINDELSER"
+	echo "# FIND FORBINDELSER"
   echo
 	nmcli -f IN-USE,SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE,CHAN dev wifi
   echo
@@ -297,7 +297,7 @@ opstartsforb(){
 
 	clear
 	echo $os
-  echo "OPRET NY AUTOMATISK FORBINDELSE"
+  echo "# OPRET NY AUTOMATISK FORBINDELSE"
 	echo 
   i=0
   nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
@@ -329,7 +329,7 @@ opstartsforb(){
 midlforb(){
   clear
 	echo $os
-  echo "OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
+  echo "# OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
   echo
   i=0
   nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
@@ -363,7 +363,7 @@ midlforb(){
 openvpn(){
 	clear
 	echo $os
-	echo "FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
+	echo "# FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
   echo
 	echo "VÆLG TEKSTFILEN INDEHOLDENDE BRUGERNAVN OG ADGANGSKODE:"
 	echo
@@ -382,7 +382,7 @@ openvpn(){
 vpnstart(){
 	clear
 	echo $os
-  echo "FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
+  echo "# FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
 	echo
 	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONSFILER (*.ovpn ELLER *.conf):"
 	echo
@@ -452,7 +452,7 @@ vpnstart(){
 fjernforb(){
 	clear
 	echo $os
-  echo "FJERN FORBINDELSE"
+  echo "# FJERN FORBINDELSE"
 	echo
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s 
 	read -p "NAVNET PÅ FORBINDELSEN TIL FJERNELSE " conname
@@ -465,7 +465,7 @@ fjernforb(){
 viskonf(){
 	clear
 	echo $os
-  echo "ALLEREDE KONFIGUREREDE FORBINDELSER"
+  echo "# ALLEREDE KONFIGUREREDE FORBINDELSER"
 	echo
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s
 	echo
@@ -476,17 +476,37 @@ viskonf(){
 wifi_radio(){
   clear
   echo $os
-  echo "TÆND ELLER SLUK WIFI"
+  echo "# TÆND ELLER SLUK WIFI"
   echo
   #Tjek om wifi er tændt eller slukket og giv modsat valg.
-  read -p "" on_off
+  nmcli r wifi | { while read line; do
+  for radio in $line; do
+    if [[ "$radio" == "enabled" ]]; then
+      echo "WIFI RADIOEN ER TÆNDT"
+      t_s="SLUKKE"
+    elif [[ "$radio" == "disabled" ]]; then
+      echo "WIFI RADIOEN ER SLUKKET"
+      t_s="TÆNDE"
+    fi
+  done
+done
+echo
+echo
+  read -p "SKRIV [J]A FOR AT $t_s RADIOEN " cmd_radio </dev/tty
+  if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "J" ]]; then
+    nmcli r wifi off 
+  elif [[ "$radio" == "disabled" ]] && [[ "$cmd_radio" == "J" ]]; then
+    nmcli r wifi on
+  fi
+}
+  menu
 }
 
 
 om(){
 	clear
 	echo $os
-  echo "OM"
+  echo "# OM"
 	echo
 	echo "<> INFO OG OG BETINGELSER FOR BRUG"
 	echo
@@ -591,11 +611,17 @@ while :
 	do
 	clear
 	echo $os
+  nmcli c s | while read line; do
+      if [[ ! "$line" == *"--"* ]]; then
+        echo $line | awk '/[0-9]/ {print "# TILSLUTTET " $1}'
+      fi
+  done
 	echo
 	echo "<f> ........... VIS FORBINDELSER"
 	echo "<a> ........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
 	echo "<c> ........... FORBIND TIL NETVÆRK"
 	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
+  echo "<r> ........... TÆND ELLER SLUK WIFI"
 	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
 	echo "<conf> ........ VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
 	echo "<niettrekvarte> FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
@@ -636,6 +662,12 @@ while :
 			echo $os
 			echo
 			;;
+    [r] | [R])
+      wifi_radio
+      clear
+      echo $os
+      echo
+      ;;
 		[d] | [D])
 			fjernforb
 			clear
@@ -691,6 +723,8 @@ elif [ "$1" == "a" ]; then
   opstartsforb
 elif [ "$1" == "c" ]; then
   midlforb
+elif [ "$1" == "r" ]; then
+  wifi_radio
 elif [ "$1" == "d" ]; then
   fjernforb
 elif [ "$1" == "conf" ]; then
