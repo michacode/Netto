@@ -308,9 +308,10 @@ opstartsforb(){
           i=$((i+1))
 #          echo "$i: $ssid"
           array+=("${ssid}")
-        elif [[ "$ssid" =~ "BARS:"* ]]; then
-          bars=$(echo $line | sed 's/BARS: //g')
-          echo "$bars $i: $navn"
+#        elif [[ "$ssid" =~ "BARS:"* ]]; then
+#          bars=$(echo $line | sed 's/BARS: //g')
+# BRUG FARVER I STEDET FOR BARS
+          echo "$i: $navn"
         fi
       done
     done
@@ -340,9 +341,10 @@ midlforb(){
           i=$((i+1))
 #          echo "$i: $ssid"
           array+=("${ssid}")
-          elif [[ "$ssid" =~ "BARS:"* ]]; then
-          bars=$(echo $line | sed 's/BARS: //g')
-          echo "$bars $i: $navn"
+#          elif [[ "$ssid" =~ "BARS:"* ]]; then
+#          bars=$(echo $line | sed 's/BARS: //g')
+# BRUG FARVER I STEDET FOR BAR
+          echo "$i: $navn"
         fi
       done
     done
@@ -495,8 +497,17 @@ echo
   read -p "SKRIV [J]A FOR AT $t_s RADIOEN " cmd_radio </dev/tty
   if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "J" ]]; then
     nmcli r wifi off 
+    
   elif [[ "$radio" == "disabled" ]] && [[ "$cmd_radio" == "J" ]]; then
     nmcli r wifi on
+#    nmcli c s | while read line; do
+#        if [[ ! "$line" == *"--"* ]]; then
+#          sleep 1
+#          break
+#        else
+#          sleep 1 
+#        fi
+#    done
   fi
 }
   menu
