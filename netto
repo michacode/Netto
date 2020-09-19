@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 ###
-### SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING I KONFIGURATIONSFIL FOR AT GÅ I BETA
-###
+### TODO: SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING I KONFIGURATIONSFIL OG MERE SIKKER SLETNING AF CRACK-FILER, FOR AT GÅ I BETA
+### 
 
+# ROD
+# Hvad gør det her egentligt godt for?
 
 ssidArray=()
 ssid=''
@@ -19,18 +21,37 @@ bssidtocrack=''
 bssid=''
 hndtryk=''
 crackbssid=''
-phy_line=$(mktemp)
-wifi_dev=$(mktemp)
-mondevice=$(mktemp)
-ovpnindh=$(mktemp)
-vpnmenuselect=$(mktemp)
 dev=''
 dict=''
 dictpath=''
 mondev=''
 rule=''
 valg=''
-os="# NETTO - version 0.50a"
+
+# VERSION
+#
+
+os="# NETTO - version 0.52a"
+
+# FARVER
+#
+
+farve_gr="\e[92m"  #GRØN
+farve_bl="\e[96m"  #CYAN
+farve_gul="\e[93m" #GUL
+farve_mag="\e[95m" #MAGENTA
+farve_rd="\e[91m"  #RØD
+farve_std="\e[39m" #STANDARD
+
+
+# MIDLERTIDIGE FILER
+#
+
+phy_line=$(mktemp)
+wifi_dev=$(mktemp)
+mondevice=$(mktemp)
+ovpnindh=$(mktemp)
+vpnmenuselect=$(mktemp)
 
 	############################################################
 	######################## Funktioner ########################
@@ -107,12 +128,16 @@ crackshake(){
 	$getbssid
 	echo ""
 	read -p "(!) BSSID: " bssid
+	if [ -z $bssid ]; then
+#		fejla="(!)Feltet BSSID kan ikke være tomt"
+#		crackshake
+    meth="quit"
+    paybill  
+    menu_start
+  fi
 	read -p "(!) KANAL: " kanal 
 	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk
-	if [ -z $bssid ]; then
-		fejla="(!)Feltet BSSID kan ikke være tomt"
-		crackshake
-	elif [ -z $kanal ]; then
+  if [ -z $kanal ]; then
 		fejlb="(!) Feltet KANAL kan ikke være tomt"
 		crackshake
 	elif [ -z $hndtryk ]; then
@@ -122,8 +147,6 @@ crackshake(){
 		fejld="(!) AF PRAKTISKE GRUNDE BEDES DU VÆLGE ET ANDET NAVN."
 		crackshake
 	fi
-	airdump="sudo airodump-ng -c $kanal --bssid $bssid -w $hndtryk wlp4s0mon --ignore-negative-one"
-	$airdump
   crackmeth
 }
 
@@ -159,15 +182,23 @@ crackmeth(){
 }
 
 maccrack(){
-	if [ "$ab" == "h2" ]; then
+  if [[ -z "$ab" ]]; then
+    meth="quit"
+    paybill 
+  else
+	  airdump="sudo airodump-ng -c $kanal --bssid $bssid -w $hndtryk wlp4s0mon --ignore-negative-one"
+	  $airdump
+  fi
+
+  if [ "$ab" == "h2" ]; then
 		meth="h2"
 		crackdict
-		elif [ "$ab" == "h1" ]; then
-			meth="h1"
-			crackdict
-		elif [ "$ab" == "ac" ]; then
-			meth="ac"
-			crackdict
+	elif [ "$ab" == "h1" ]; then
+		meth="h1"
+		crackdict
+	elif [ "$ab" == "ac" ]; then
+		meth="ac"
+		crackdict
 	else	
 		crackmeth
 	fi
@@ -186,6 +217,8 @@ crackdict(){
 	if [[ -f "$dictpath" ]]; then
 	  rm $mondevice
 		paybill
+  elif [[ -z "$dictfile" ]]; then
+    menu
 	else
 		crackdict
 	fi
@@ -214,6 +247,8 @@ paybill(){
 		hcrule
 	elif [ "$meth" = "ac" ]; then
 		aircrack
+  elif [ "meth" = "quit" ]; then
+    menu_start
 	fi
 }
 
@@ -228,6 +263,8 @@ hcrule(){
 	rule="${HOME}/rules/${rulefile}" 
 	if [[ -f "$rule" ]]; then
 		rulecrack
+  elif [[ -z "$rulefile" ]]; then
+    menu
 	else
 		hcrule
 	fi
@@ -299,28 +336,46 @@ opstartsforb(){
 	echo $os
   echo "# OPRET NY AUTOMATISK FORBINDELSE"
 	echo 
+  
   i=0
-  nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
-     for ssid in $line; do
-        if [[ "$ssid" =~ "SSID:"* ]]; then
-          ssid=$(echo $line | sed 's/SSID: //g')
-          navn=$ssid
-          i=$((i+1))
-#          echo "$i: $ssid"
-          array+=("${ssid}")
-#        elif [[ "$ssid" =~ "BARS:"* ]]; then
-#          bars=$(echo $line | sed 's/BARS: //g')
-# BRUG FARVER I STEDET FOR BARS
-          echo "$i: $navn"
-        fi
+  
+  nmcli -f SSID,FREQ,SIGNAL,ACTIVE -m multiline d w | { while read line; do
+    for ssid in $line; do
+      if [[ "$ssid" =~ "SSID:"* ]]; then
+        ssid=$(echo $line | sed 's/SSID: //g')
+        navn=$ssid
+        i=$((i+1))
+        array+=("${ssid}")
+      elif [[ "$ssid" =~ "FREQ:"* ]]; then
+        freq=$(echo $line | sed 's/FREQ: //g')
+      elif [[ "$ssid" =~ "SIGNAL:"* ]]; then
+        signal=$(echo $line | sed 's/SIGNAL: //g')
+          if [[ "$signal" -ge "70" ]]; then
+             echo -e "${farve_gr}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "55" ]]; then
+             echo -e "${farve_bl}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "40" ]]; then
+             echo -e "${farve_gul}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "30" ]]; then
+             echo -e "${farve_mag}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "0" ]]; then
+             echo -e "${farve_rd}$i: $navn  # FREKVENS $freq ($signal)"
+           fi
+      fi
       done
-    done
-    echo
-    read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
- ssid=${array[((input-1))]}
- read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
- read -p "FORBINDELSENS KALDENAVN " conname </dev/tty
- nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
+  done
+
+  echo -e $farve_std
+  
+  read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
+  if [[ -z "$input" ]]; then
+    break
+  else
+    ssid=${array[((input-1))]}
+    read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
+    read -p "FORBINDELSENS KALDENAVN " conname </dev/tty
+    nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
+  fi
 }
   echo
   read -p "ENTER/RETUR FOR MENU "
@@ -332,27 +387,45 @@ midlforb(){
 	echo $os
   echo "# OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
   echo
+  
   i=0
-  nmcli -f SSID,BARS,SIGNAL,ACTIVE -m multiline d w | { while read line; do
-     for ssid in $line; do
-        if [[ "$ssid" =~ "SSID:"* ]]; then
-          ssid=$(echo $line | sed 's/SSID: //g')
-          navn=$ssid
-          i=$((i+1))
-#          echo "$i: $ssid"
-          array+=("${ssid}")
-#          elif [[ "$ssid" =~ "BARS:"* ]]; then
-#          bars=$(echo $line | sed 's/BARS: //g')
-# BRUG FARVER I STEDET FOR BAR
-          echo "$i: $navn"
-        fi
+  
+  nmcli -f SSID,FREQ,SIGNAL,ACTIVE -m multiline d w | { while read line; do
+    for ssid in $line; do
+      if [[ "$ssid" =~ "SSID:"* ]]; then
+        ssid=$(echo $line | sed 's/SSID: //g')
+        navn=$ssid
+        i=$((i+1))
+        array+=("${ssid}")
+      elif [[ "$ssid" =~ "FREQ:"* ]]; then
+        freq=$(echo $line | sed 's/FREQ: //g')
+      elif [[ "$ssid" =~ "SIGNAL:"* ]]; then
+        signal=$(echo $line | sed 's/SIGNAL: //g')
+          if [[ "$signal" -ge "70" ]]; then
+             echo -e "${farve_gr}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "55" ]]; then
+             echo -e "${farve_bl}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "40" ]]; then
+             echo -e "${farve_gul}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "30" ]]; then
+             echo -e "${farve_mag}$i: $navn  # FREKVENS $freq ($signal)"
+          elif [[ "$signal" -ge "0" ]]; then
+             echo -e "${farve_rd}$i: $navn  # FREKVENS $freq ($signal)"
+           fi
+      fi
       done
-    done
-    echo
-    read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
- ssid=${array[((input-1))]}
- read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
- nmcli d wifi c "$ssid" password "$wpa"
+  done
+
+  echo -e $farve_std
+
+  read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
+  if [[ -z "$input" ]]; then
+    break
+  else
+  ssid=${array[((input-1))]}
+  read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
+  nmcli d wifi c "$ssid" password "$wpa"
+  fi
 }
 	echo
 	read -p "ENTER/RETUR FOR MENU "
@@ -360,7 +433,6 @@ midlforb(){
 }
 
 # Mangler mulighed for at oprette passwordtxt
-# Mangler funktion der tjekker om der er forbindelse til internettet.
 
 openvpn(){
 	clear
@@ -482,19 +554,21 @@ wifi_radio(){
   echo
   #Tjek om wifi er tændt eller slukket og giv modsat valg.
   nmcli r wifi | { while read line; do
-  for radio in $line; do
-    if [[ "$radio" == "enabled" ]]; then
-      echo "WIFI RADIOEN ER TÆNDT"
-      t_s="SLUKKE"
-    elif [[ "$radio" == "disabled" ]]; then
-      echo "WIFI RADIOEN ER SLUKKET"
-      t_s="TÆNDE"
-    fi
+    for radio in $line; do
+      if [[ "$radio" == "enabled" ]]; then
+        echo "WIFI RADIOEN ER TÆNDT"
+        t_s="SLUKKE"
+      elif [[ "$radio" == "disabled" ]]; then
+        echo "WIFI RADIOEN ER SLUKKET"
+        t_s="TÆNDE"
+      fi
+    done
   done
-done
-echo
-echo
+  echo
+  echo
+
   read -p "SKRIV [J]A FOR AT $t_s RADIOEN " cmd_radio </dev/tty
+
   if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "J" ]]; then
     nmcli r wifi off 
     
@@ -618,7 +692,13 @@ help(){
   
 
 menu(){
-while :
+  if [[ -z "$0" ]]; then
+    menu_start
+  fi
+}
+
+menu_start(){
+  while :
 	do
 	clear
 	echo $os
@@ -640,13 +720,7 @@ while :
 	echo
   echo "<help> ........ HJÆLP"
 	echo "<about> ... (!) OM SKRIPTET, LÆS FØR BRUG"
-	echo
-	if [ ! -z "$menuflag" ]; then
-		echo
-		echo "(!)"
-		echo $menuflag
-		echo
-	fi
+  echo
 	read -p "KOMMANDO " opt	
 		case $opt in
 		[f] | [F]) 
@@ -748,6 +822,6 @@ fi
 
 	################# MENU ###############
 
-menu
+menu_start
 
 exit 0
