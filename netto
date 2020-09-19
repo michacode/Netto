@@ -31,7 +31,7 @@ valg=''
 # VERSION
 #
 
-os="# NETTO - version 0.52a"
+os="# NETTO - version 0.52.1a"
 
 # FARVER
 #
@@ -318,23 +318,12 @@ aircrack(){
 
 	     ################################################
 	################### NORMALE NETVÆRKSFUNKTIONER ############
-udkig(){
-	clear
-	echo $os
-	echo "# FIND FORBINDELSER"
-  echo
-	nmcli -f IN-USE,SSID,FREQ,BARS,SIGNAL,SECURITY,ACTIVE,CHAN dev wifi
-  echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
-       	
-}
 
 opstartsforb(){
 
 	clear
 	echo $os
-  echo "# OPRET NY AUTOMATISK FORBINDELSE"
+  echo "# VIS/OPRET NY AUTOMATISK FORBINDELSE"
 	echo 
   
   i=0
@@ -369,7 +358,7 @@ opstartsforb(){
   
   read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
   if [[ -z "$input" ]]; then
-    break
+    continue
   else
     ssid=${array[((input-1))]}
     read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
@@ -385,7 +374,7 @@ opstartsforb(){
 midlforb(){
   clear
 	echo $os
-  echo "# OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
+  echo "# VIS/OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
   echo
   
   i=0
@@ -420,7 +409,7 @@ midlforb(){
 
   read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
   if [[ -z "$input" ]]; then
-    break
+    continue
   else
   ssid=${array[((input-1))]}
   read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
@@ -567,12 +556,12 @@ wifi_radio(){
   echo
   echo
 
-  read -p "SKRIV [J]A FOR AT $t_s RADIOEN " cmd_radio </dev/tty
+  read -p "SKRIV <X> FOR AT $t_s RADIOEN " cmd_radio </dev/tty
 
-  if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "J" ]]; then
+  if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "X" ]]; then
     nmcli r wifi off 
     
-  elif [[ "$radio" == "disabled" ]] && [[ "$cmd_radio" == "J" ]]; then
+  elif [[ "$radio" == "disabled" ]] && [[ "$cmd_radio" == "X" ]]; then
     nmcli r wifi on
 #    nmcli c s | while read line; do
 #        if [[ ! "$line" == *"--"* ]]; then
@@ -708,14 +697,13 @@ menu_start(){
       fi
   done
 	echo
-	echo "<f> ........... VIS FORBINDELSER"
-	echo "<a> ........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
-	echo "<c> ........... FORBIND TIL NETVÆRK"
-	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
   echo "<r> ........... TÆND ELLER SLUK WIFI"
-	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
-	echo "<conf> ........ VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
+	echo "<c> ........... VIS/FORBIND TIL NETVÆRK"
+	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
+	echo "<a> ........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
 	echo "<niettrekvarte> FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
+	echo "<conf> ........ VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
+	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
 	echo "<q> ........... AFSLUT"
 	echo
   echo "<help> ........ HJÆLP"
@@ -723,12 +711,6 @@ menu_start(){
   echo
 	read -p "KOMMANDO " opt	
 		case $opt in
-		[f] | [F]) 
-			udkig
-			clear
-			echo $os
-			echo
-			;;
 		"a" | "A")
 			opstartsforb
 			clear
