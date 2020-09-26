@@ -31,7 +31,7 @@ valg=''
 # VERSION
 #
 
-os="# NETTO - version 0.52.1a"
+os="# NETTO - version 0.52.2a"
 
 # FARVER
 #
@@ -358,7 +358,7 @@ opstartsforb(){
   
   read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
   if [[ -z "$input" ]]; then
-    continue
+    :
   else
     ssid=${array[((input-1))]}
     read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
@@ -409,7 +409,7 @@ midlforb(){
 
   read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
   if [[ -z "$input" ]]; then
-    continue
+    :
   else
   ssid=${array[((input-1))]}
   read -p "ADGANGSKODE TIL $ssid " wpa </dev/tty
