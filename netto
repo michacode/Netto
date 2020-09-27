@@ -31,7 +31,7 @@ valg=''
 # VERSION
 #
 
-os="# NETTO - version 0.54a"
+os="# NETTO - version 0.56a"
 
 # FARVER
 #
@@ -61,8 +61,12 @@ vpnmenuselect=$(mktemp)
 	#################### STARTER MONITORERING ###################
 	###########  A N O R M A L E  F U N K T I O N E R ###########	
 niettrekvarte(){
-	echo "CRACKING AF NETVÆRK KRÆVER IKKE KUN PERSONLIGE TILLADELSER."
-	mon="sudo -s airmon-ng"
+  echo -e $farve_std
+	clear
+
+  echo "CRACKING AF NETVÆRK KRÆVER IKKE KUN PERSONLIGE TILLADELSER."
+	
+  mon="sudo -s airmon-ng"
 	$mon  > ${phy_line}
 	while read line; do
 		for searchdev in $line; do
@@ -73,32 +77,39 @@ niettrekvarte(){
 			fi
 		done
 	done<${phy_line}
-	rm $phy_line
+	
+  rm $phy_line
 	rm $wifi_dev
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	
+  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####      S T O P P E R  N E T W O R K M A N A G E R  I  S Y S T E M C T L     #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
 	sudo systemctl stop NetworkManager
 	clear
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	
+  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "##### A I R C R A C K - N G  T J E K K E R  O G  D R Æ B E R  P R O C E S S E R #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
 	sudo airmon-ng check kill
 	clear
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	
+  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####     A I R C R A C K - N G  S T A R T E R  M O N I T O R E R I N G      #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
 	sudo airmon-ng start "$dev"
 	clear
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
+	
+  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####      F I N D E R  U D S T Y R E T  T I L  M O N I T O R E R I N G      #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	ifconfig="ifconfig"
-	$ifconfig > ${mondevice}
+	
+  ifconfig="ifconfig"
+	
+  $ifconfig > ${mondevice}
 	while read line; do
 		for searchmon in $line; do
 			if [[ $searchmon = ${dev+*"mon"*} ]]; then
@@ -108,13 +119,16 @@ niettrekvarte(){
 			fi
 		done
 	done<${mondevice}
-	crackshake
+	
+  clear
+  crackshake
 }	
 
 	##################### FIND PIBE OG GIV HÅNDTRYK ####################
+
 crackshake(){
 	getbssid="sudo airodump-ng --band abg $mondev" # --band a for 5ghz intet band argument 2ghz
-	clear
+
 	echo "(1/2) SKRIPTET STARTER NU AIRODUMP-NG. DER GENERERES EN LIST AF TILGÆNGELIGE NETVÆRK.   "
 	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES q-TASTEN TO GANGE."
 	echo "                                                                                        "
@@ -124,19 +138,23 @@ crackshake(){
 	echo "          noget, der usædvanligt utilstrækkeligt ved din indtastning.                   "
 	echo "                                                                                        "
 	echo "                                                                                        "
-	read -p "   ENTER/RETURN for at fortsætte...                                                  "
+	read -p "   ENTER/RETURN for at fortsætte... " </dev/tty
 	$getbssid
+
 	echo ""
-	read -p "(!) BSSID: " bssid
-	if [ -z $bssid ]; then
+	read -p "(!) BSSID: " bssid </dev/tty
+	
+  if [ -z $bssid ]; then
 #		fejla="(!)Feltet BSSID kan ikke være tomt"
 #		crackshake
     meth="quit"
     paybill  
     menu
   fi
-	read -p "(!) KANAL: " kanal 
-	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk
+	
+  read -p "(!) KANAL: " kanal </dev/tty
+	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk </dev/tty
+  
   if [ -z $kanal ]; then
 		fejlb="(!) Feltet KANAL kan ikke være tomt"
 		crackshake
@@ -148,12 +166,17 @@ crackshake(){
 		crackshake
 	fi
   crackmeth
+
 }
 
 	####################        CRACK SLANGS         ##################
+
 crackmeth(){
+	
+  echo -e $farve_std
 	clear
-	echo "(2/2) AIRODUMP-NG OVERVÅGER NU FORBINDELSEN OG FORSØGE AT OPFANGE ET HÅNDTRYK.     "
+  
+  echo "(2/2) AIRODUMP-NG OVERVÅGER NU FORBINDELSEN OG FORSØGE AT OPFANGE ET HÅNDTRYK.     "
   echo "      ET HÅNDTRYK KAN GENERERES NÅR ET APPARAT FORSØGER AT OPRETTE FORBINDELSE TIL "
 	echo "      NETVÆRKET. HVIS DU BLIVER TRÆT AF AT VENTE, KAN DU FORSØGE AT GENNEMTVINGE ET"
 	echo "      HÅNDTRYK, VED SELV AT FORSØGE AT OPRETTE FORBINDELSE TIL NETVÆRKET.          "
@@ -177,7 +200,7 @@ crackmeth(){
 	echo "               Denne metode langsommere end h1, men kan være nyttig, hvis Hashcat  "
 	echo "               ikke er installeret (af en eller anden mystisk årsag).              "
 	echo ""
-	read -p "KOMMANDO (fx. xx) " ab
+	read -p "KOMMANDO (fx. xx) " ab </dev/tty
 	maccrack
 }
 
@@ -207,14 +230,19 @@ maccrack(){
 	#################### VÆLG ORDBOG ######################
 
 crackdict(){	
+  echo -e $farve_std
 	clear
+
 	echo "VÆLG EN AF DINE ORDBØGER:"
 	echo ""
 	ls -f ${HOME}/dicts
-	echo ""
-	read -p "(!) SKRIV ORDBOGENS FILNAVN (${HOME}/dicts/) " dictfile
-	dictpath="${HOME}/dicts/${dictfile}"
-	if [[ -f "$dictpath" ]]; then
+	
+  echo ""
+	read -p "(!) SKRIV ORDBOGENS FILNAVN (${HOME}/dicts/) " dictfile </dev/tty
+	
+  dictpath="${HOME}/dicts/${dictfile}"
+	
+  if [[ -f "$dictpath" ]]; then
 	  rm $mondevice
 		paybill
   elif [[ -z "$dictfile" ]]; then
@@ -225,8 +253,11 @@ crackdict(){
 }
 
 	########## SLÅ INTERNET TIL IGEN ################
+
 paybill(){
+  echo $farve_std
 	clear
+
 	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####                 S T O P P E R  M O N I T O R E R I N G                 #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
@@ -234,14 +265,16 @@ paybill(){
 	echo "> MONITORERING STOPPES PÅ $mondev"
 	sudo airmon-ng stop "$mondev"
 	clear
-	echo ""
+
+  echo ""
 	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####  N E T W O R K M A N A G E R  A K T I V E R E S  I  S Y S T E M C T L  #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo 
 	sudo systemctl start NetworkManager
-	clear
-	if [ "$meth" = "h1" ]; then
+  clear
+  
+  if [ "$meth" = "h1" ]; then
 		hcnorule
 	elif [ "$meth" = "h2" ]; then
 		hcrule
@@ -253,15 +286,21 @@ paybill(){
 }
 
 	#################### CRACK MED HASHCAT ###################
+
 hcrule(){
+  echo -e $farve_std
 	clear
+
 	echo "VÆLG EN AF DINE REGEL LISTER (*.rule):"
 	echo
-	ls -f ${HOME}/rules
+  ls -f ${HOME}/rules
 	echo
-	read -p "INDTAST REGELSÆTTETS FILNAVN (${HOME}/rules/) " rulefile
-	rule="${HOME}/rules/${rulefile}" 
-	if [[ -f "$rule" ]]; then
+	
+  read -p "INDTAST REGELSÆTTETS FILNAVN (${HOME}/rules/) " rulefile </dev/tty
+	
+  rule="${HOME}/rules/${rulefile}" 
+	
+  if [[ -f "$rule" ]]; then
 		rulecrack
   elif [[ -z "$rulefile" ]]; then
     menu
@@ -271,94 +310,137 @@ hcrule(){
 }
 
 rulecrack(){
+  echo -e $farve_std
+  clear
+
   wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
   $wpaclean
+  
   crack="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
   $crack
+  
   hashcat="sudo hashcat -m 2500 -r $rule ${hndtryk}.hccapx $dictpath -D 1,2 --force"
   $hashcat
 	echo
+
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
+
   rm ${hndtryk}*.*
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+	 
   while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
 hcnorule(){
+  echo -e $farve_std
 	clear
+
   wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
   $wpaclean
+  
   crack="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
   $crack
+  
   hashcat="sudo hashcat -m 2500 -a 0 ${hndtryk}.hccapx $dictpath -D 1,2 --force"
   $hashcat
 	echo
+
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
+  
   rm ${hndtryk}*.*
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+  
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+	 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
 	#################### CRACK MED AIRCRACK-NG #################
+
 aircrack(){
+  echo -e $farve_std
 	clear
+
   crack="sudo aircrack-ng -w $dictpath -b $bssid ${hndtryk}-01.cap"
   $crack
 	echo
-	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
+	
+  echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
+  
   rm ${hndtryk}*.*
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+  
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+	 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
-	     ################################################
-	################### NORMALE NETVÆRKSFUNKTIONER ############
+	###############################################################
+	################### NORMALE NETVÆRKSFUNKTIONER ################
+  ###############################################################
+
+  ### AUTOMATISK OPSTARTSFORBINDELSE ###
 
 opstartsforb(){
-
+  echo -e $farve_std
 	clear
+
 	echo $os
   echo "# VIS/OPRET NY AUTOMATISK FORBINDELSE"
 	echo 
@@ -403,25 +485,36 @@ opstartsforb(){
     nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
   fi
 }
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+  
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      [m] | [M])
+        clear
+        echo $os
+	      menu
+        ;;
+      [q] | [Q])
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
+  ###### MIDLERTIDIG FORBINDELSE ######
+
 midlforb(){
+  echo -e $farve_std
   clear
+
 	echo $os
   echo "# VIS/OPRET NY MIDLERTIDIG FORBINDELSE TIL ET NETWÆRK" 
   echo
@@ -453,7 +546,7 @@ midlforb(){
       fi
       done
   done
-
+  
   echo -e $farve_std
 
   read -p "VÆLG FORBINDELSE (1-$i) " input </dev/tty
@@ -465,27 +558,37 @@ midlforb(){
   nmcli d wifi c "$ssid" password "$wpa"
   fi
 }
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+   
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+    "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
-# Mangler mulighed for at oprette passwordtxt
+
+  ###### VPN FORBINDELSE ######
 
 openvpn(){
+  echo -e $farve_std
 	clear
+
 	echo $os
 	echo "# FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
   echo
@@ -493,10 +596,13 @@ openvpn(){
 	echo
 	ls -f /etc/openvpn/*.txt
 	echo
-	read -p "SKRIV FILENS NAVN " pass
-	passpath="/etc/openvpn/${pass}"
+	
+  read -p "SKRIV FILENS NAVN " pass
+	
+  passpath="/etc/openvpn/${pass}"
 	echo $passpath
-	if [[ -f "$passpath" ]]; then
+	
+  if [[ -f "$passpath" ]]; then
 		vpnstart
 	else
 		openvpn
@@ -504,22 +610,25 @@ openvpn(){
 }
 
 vpnstart(){
+  echo -e $farve_std
 	clear
+
 	echo $os
   echo "# FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
 	echo
 	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONSFILER (*.ovpn ELLER *.conf):"
 	echo
-	count=0
+	
+  count=0
 	cmdovpn="ls -f /etc/openvpn/*.ovpn"
 	cmdconf="ls -f /etc/openvpn/*.conf"
 	
-# Skriver output med indhold til tempfil
+  # Skriver output med indhold til tempfil
 
-    $cmdovpn>${ovpnindh}
-		$cmdconf>>${ovpnindh}
+  $cmdovpn>${ovpnindh}
+	cmdconf>>${ovpnindh}
 	
-# Skanner indholdet af tempfil og laver ny med 1=*,2=*...
+  # Skanner indholdet af tempfil og laver ny med 1=*,2=*...
 
   while read index;
 		do
@@ -529,15 +638,16 @@ vpnstart(){
 		done
 	done<${ovpnindh}
 	
-# Opstiller menuen
+  # Opstiller menuen
 
   cat $vpnmenuselect
 	echo
 	echo "(!) NÅR FORBINDELSEN ER OPRETTET AFBRYDES FORBINDELSEN VED AT TRYKKE CTRL-C"
 	echo
-	read -p "SKRIV NUMMERET FØR STIGEN TIL FILEN " vpnvalg
 	
-# Skanner den nye tempfil for brugerens input
+  read -p "SKRIV NUMMERET FØR STIGEN TIL FILEN " vpnvalg
+	
+  # Skanner den nye tempfil for brugerens input
 
   while read line;
 	do
@@ -549,138 +659,190 @@ vpnstart(){
 		fi
 		done
 	done<${vpnmenuselect}
+
 	rm $ovpnindh
 	rm $vpnmenuselect
 
-# Gør kommandoen til start af vpn forbindelse klar
+  # Gør kommandoen til start af vpn forbindelse klar
 
   echo
 	echo "DER KRÆVES SUPERBRUGER TILLADELSE"
 	echo
+
 	# Starter vpn forbindelse
-	sudo killall openvpn
+	
 	echo "> SØRGER FOR AT DER IKKE KØRER NOGLE OPENVPN PROCESSER"
-	echo
+  sudo killall openvpn &>/dev/null
+  echo
+  clear
+
 	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####  F O R S Ø G E R  A T  S T A R T E  V P N - F O B I N D E L S E  #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo
 	cd /etc/openvpn
 	sudo openvpn --config "$valgtvpn" --auth-user-pass "$passpath" --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-      count=0
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+	
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+   
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        count=0
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
+  
+  ###### SLET FORBINDELSE ######
 
 fjernforb(){
+  echo -e $farve_std
 	clear
+
 	echo $os
   echo "# FJERN FORBINDELSE"
 	echo
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s 
 	read -p "NAVNET PÅ FORBINDELSEN TIL FJERNELSE " conname
 	nmcli c delete "$conname"
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
+
+# Menu eller afslut?
+  
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
+   
+  while true; do
 	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
+  ##### VIS KONFIGUREREDE/GEMTE FORBINDELSER #######
+
 viskonf(){
+  echo -e $farve_std
 	clear
+
 	echo $os
   echo "# ALLEREDE KONFIGUREREDE FORBINDELSER"
 	echo
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    "m" | "M" )
-    clear
-    echo $os
-	  menu
-    ;;
-  "q" | "Q" )
-    break
-    ;;
-esac
-done
-exit 0
+
+  # Menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+	 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
 
+  ###### WIFI: TÆND ELLER SLUK RADIO #######
+
 wifi_radio(){
+  echo -e $farve_std
   clear
+
   echo $os
   echo "# TÆND ELLER SLUK WIFI"
   echo
-  #Tjek om wifi er tændt eller slukket og giv modsat valg.
+
+  # Tjek om wifi er tændt eller slukket og giv modsat valg.
+
   nmcli r wifi | { while read line; do
     for radio in $line; do
       if [[ "$radio" == "enabled" ]]; then
-        echo "WIFI RADIOEN ER TÆNDT"
-        t_s="SLUKKE"
+        echo -e "${farve_gr}WIFI RADIOEN ER TÆNDT${farve_std}"
+        t_s="${farve_rd}SLUK${farve_std}"
       elif [[ "$radio" == "disabled" ]]; then
-        echo "WIFI RADIOEN ER SLUKKET"
-        t_s="TÆNDE"
+        echo -e "${farve_rd}WIFI RADIOEN ER SLUKKET${farve_std}"
+        t_s="${farve_gr}TÆND${farve_std}"
       fi
     done
   done
+
+  echo
+  echo -e "[x] $t_s RADIOEN"
   echo
   echo
-  echo "<x> FOR AT $t_s RADIOEN"
-  echo "<m> FOR MENU, <q> FOR AFSLUT"
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    [x])
-  if [[ "$radio" == "enabled" ]]; then
-    nmcli r wifi off 
-    
-  elif [[ "$radio" == "disabled" ]]; then
-    nmcli r wifi on
-  fi
-  wifi_radio
-  ;;
-  [m])
-     menu
-    ;;
-  [q])
-    break 
-    ;;
-  *)
-esac
-done
-}
-exit 0
+  
+  # Tænd, sluk, menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
+  
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      [x])
+        if [[ "$radio" == "enabled" ]]; then
+          nmcli r wifi off 
+        elif [[ "$radio" == "disabled" ]]; then
+          nmcli r wifi on
+        fi
+        wifi_radio
+        ;;
+      [m])
+        menu
+        ;;
+      [q])
+        break 
+        ;;
+      *)
+    esac
+  done
 }
 
+exit 0
+
+}
+
+  ####### OM SKRIPTET ########
+
 om(){
+  echo -e $farve_std
 	clear
+
 	echo $os
   echo "# OM"
 	echo
@@ -760,70 +922,100 @@ om(){
 	echo "    REGELLISTER I MAPPEN: /home/*BRUGER*/rules/"
 	echo "    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/"
 	echo
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    [m] | [M])
-	  menu
-    ;;
-  [q] | [Q])
-    break
-    ;;
-esac
-done
+  
+  # Tænd, sluk, menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
+ 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      [m] | [M])
+	      menu
+        ;;
+      [q] | [Q])
+        break
+        ;;
+    esac
+  done
+
 exit 0
+
 }
 
-help(){
+  ####### HJÆLP #######
+
+hlp(){
   echo "FØLGENDE ARGUMENTER KAN BRUGES FRA KOMMANDO PROMT"
   echo "FOR@EKSEMPEL [~] $ netto vpn"
-	echo "<f>             : VIS FORBINDELSER"
-	echo "<a>             : OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
-	echo "<c>             : FORBIND TIL NETVÆRK"
-	echo "<vpn>           : FORBIND VIA OPENVPN KONFIGURATION"
-	echo "<d>             : SLET KONFIGURERET NETVÆRKSFORBINDELSE"
-	echo "<conf>          : VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
-	echo "<niettrekvarte> : FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
-  echo "<help>          : HJÆLP"
-	echo "<about>         : OM SKRIPTET, LÆS FØR BRUG"
+  echo "<[r]adio>            : TÆND ELLER SLUK WIFI RADIO"
+	echo "<[f]orbindelser>     : VIS/OPRET FORBINDELSE TIL NETVÆRK"
+	echo "<[a]uto>             : OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
+	echo "<[v]pn>              : FORBIND VIA OPENVPN KONFIGURATION"
+	echo "<[s]let>             : SLET KONFIGURERET NETVÆRKSFORBINDELSE"
+	echo "<[g]emt>             : VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
+	echo "<[n]iettrekvarte>    : FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
+	echo "<[o]m>               : OM SKRIPTET, LÆS FØR BRUG"
 	echo
-	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
-while true; do
-	read -rsn1 opt </dev/tty
-  case $opt in
-    [m] | [M])
-	  menu
-    ;;
-  [q] | [Q])
-    break
-    ;;
-esac
-done
-exit 0
+
+  # Tænd, sluk, menu eller afslut?
+
+	echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
+	 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      [m] | [M])
+	      menu
+        ;;
+      [q] | [Q])
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+
 }
   
 menu(){
+  echo -e ${farve_std}
 	clear
+
 	echo $os
-  nmcli c s | while read line; do
-      if [[ ! "$line" == *"--"* ]]; then
-        echo $line | awk '/[0-9]/ {print "# TILSLUTTET " $1}'
-      fi
+
+  # Tjek forbindelse,
+
+  test_net=$(ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; echo $?)
+  for nr in $test_net; do
+    if [[ "$nr" == "0" ]]; then
+      nmcli c s | awk '!/NAME/'| while read line; do
+        if [[ ! "$line" == *"--"* ]]; then
+          echo $line | awk '/[0-9]/ {print "# TILSLUTTET " $1}'
+        fi
+      done
+    elif [[ "$nr" == "2" ]]; then
+        echo "# IKKE TILSLUTTET INTERNETTET"
+    fi
   done
-	echo
-  echo "[r]adio ....... TÆND ELLER SLUK WIFI RADIO"
-	echo "[f]orbind ..... FORBIND/VIS TIL NETVÆRK"
-	echo "[v]pn ......... FORBIND VIA OPENVPN KONFIGURATION"
-	echo "[a]uto ........ OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
-	echo "[n]iettrekvarte FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
-	echo "[g]emt ........ VIS GEMTE NETVÆRSKFORBINDELSER"
-	echo "[s]let ........ SLET KONFIGURERET NETVÆRKSFORBINDELSE"
-	echo "[q]uit ........ AFSLUT"
+  echo 
+  echo "[r]adio ........ TÆND ELLER SLUK WIFI RADIO"
+	echo "[f]orbindelser . VIS/OPRET FORBINDELSE TIL NETVÆRK"
+	echo "[v]pn .......... FORBIND VIA OPENVPN KONFIGURATION"
+	echo "[a]uto ......... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
+	echo "[n]iettrekvarte  FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
+	echo "[g]emt ......... VIS GEMTE NETVÆRSKFORBINDELSER"
+	echo "[s]let ......... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
+	echo -e "${farve_rd}[q]uit ......... AFSLUT${farve_std}"
 	echo
   echo "[h]jælp ....... HJÆLP"
 	echo "[o]m ...... (!) OM SKRIPTET, LÆS FØR BRUG"
   echo
+
+  # Menu valg
+
   while true; do 
 	  read -rsn1 opt </dev/tty	
 		case $opt in
@@ -888,30 +1080,32 @@ menu(){
       :
 		esac
 done
+
 }
 
 	######################################
 	#### *  PROGRAMMER STARTER HER * #####
-       ##### TAG IMOD ARGUMENT? #####
 
-if [ "$1" == "v" ]; then
+       ##### TAG IMOD ARGUMENT #####
+
+if [ "$1" == "v" ] || [ "$1" == "vpn" ]; then
   openvpn
-elif [ "$1" == "a" ]; then
+elif [ "$1" == "a" ] || [ "$1" == "auto" ]; then
   opstartsforb
-elif [ "$1" == "c" ]; then
+elif [ "$1" == "f" ] || [ "$1" == "forbind" ]; then
   midlforb
-elif [ "$1" == "r" ]; then
+elif [ "$1" == "r" ] || [ "$1" == "radio" ]; then
   wifi_radio
-elif [ "$1" == "d" ]; then
+elif [ "$1" == "s" ] || [ "$1" == "slet" ]; then
   fjernforb
-elif [ "$1" == "g" ]; then
+elif [ "$1" == "g" ] || [ "$1" == "gemt" ]; then
   viskonf
-elif [ "$1" == "o" ]; then
+elif [ "$1" == "o" ] || [ "$1" == "om" ]; then
   om
-elif [ "$1" == "n" ]; then
+elif [ "$1" == "n" ] || [ "$1" == "niettrekvarte" ]; then
  niettrekvarte
-elif [ "$1" == "h" ];then
-  help
+elif [ "$1" == "h" ] || [ "$1" == "hjælp" ]; then
+  hlp
 fi
 
 	################# MENU ###############
