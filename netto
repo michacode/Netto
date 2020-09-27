@@ -31,7 +31,7 @@ valg=''
 # VERSION
 #
 
-os="# NETTO - version 0.52.2a"
+os="# NETTO - version 0.54a"
 
 # FARVER
 #
@@ -133,7 +133,7 @@ crackshake(){
 #		crackshake
     meth="quit"
     paybill  
-    menu_start
+    menu
   fi
 	read -p "(!) KANAL: " kanal 
 	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk
@@ -248,7 +248,7 @@ paybill(){
 	elif [ "$meth" = "ac" ]; then
 		aircrack
   elif [ "meth" = "quit" ]; then
-    menu_start
+    menu
 	fi
 }
 
@@ -281,9 +281,21 @@ rulecrack(){
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
   rm ${hndtryk}*.*
-	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+  while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 hcnorule(){
@@ -298,9 +310,21 @@ hcnorule(){
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
   rm ${hndtryk}*.*
-	echo
-  read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 	#################### CRACK MED AIRCRACK-NG #################
@@ -312,8 +336,21 @@ aircrack(){
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
   rm ${hndtryk}*.*
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 	     ################################################
@@ -366,9 +403,21 @@ opstartsforb(){
     nmcli c add type wifi ssid "$ssid" connection.autoconnect yes con-name "$conname"
   fi
 }
-  echo
-  read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 midlforb(){
@@ -416,9 +465,21 @@ midlforb(){
   nmcli d wifi c "$ssid" password "$wpa"
   fi
 }
-	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 # Mangler mulighed for at oprette passwordtxt
@@ -506,10 +567,22 @@ vpnstart(){
 	echo
 	cd /etc/openvpn
 	sudo openvpn --config "$valgtvpn" --auth-user-pass "$passpath" --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre
-	echo
-	read -p "ENTER/RETUR FOR MENU "
-	count=0
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+      count=0
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 fjernforb(){
@@ -520,9 +593,21 @@ fjernforb(){
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s 
 	read -p "NAVNET PÅ FORBINDELSEN TIL FJERNELSE " conname
 	nmcli c delete "$conname"
-	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 viskonf(){
@@ -531,9 +616,21 @@ viskonf(){
   echo "# ALLEREDE KONFIGUREREDE FORBINDELSER"
 	echo
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s
-	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    "m" | "M" )
+    clear
+    echo $os
+	  menu
+    ;;
+  "q" | "Q" )
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 wifi_radio(){
@@ -555,27 +652,32 @@ wifi_radio(){
   done
   echo
   echo
-
-  read -p "SKRIV <X> FOR AT $t_s RADIOEN " cmd_radio </dev/tty
-
-  if [[ "$radio" == "enabled" ]] && [[ "$cmd_radio" == "X" ]]; then
+  echo "<x> FOR AT $t_s RADIOEN"
+  echo "<m> FOR MENU, <q> FOR AFSLUT"
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    [x])
+  if [[ "$radio" == "enabled" ]]; then
     nmcli r wifi off 
     
-  elif [[ "$radio" == "disabled" ]] && [[ "$cmd_radio" == "X" ]]; then
+  elif [[ "$radio" == "disabled" ]]; then
     nmcli r wifi on
-#    nmcli c s | while read line; do
-#        if [[ ! "$line" == *"--"* ]]; then
-#          sleep 1
-#          break
-#        else
-#          sleep 1 
-#        fi
-#    done
   fi
+  wifi_radio
+  ;;
+  [m])
+     menu
+    ;;
+  [q])
+    break 
+    ;;
+  *)
+esac
+done
 }
-  menu
+exit 0
 }
-
 
 om(){
 	clear
@@ -658,8 +760,19 @@ om(){
 	echo "    REGELLISTER I MAPPEN: /home/*BRUGER*/rules/"
 	echo "    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/"
 	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    [m] | [M])
+	  menu
+    ;;
+  [q] | [Q])
+    break
+    ;;
+esac
+done
+exit 0
 }
 
 help(){
@@ -675,20 +788,22 @@ help(){
   echo "<help>          : HJÆLP"
 	echo "<about>         : OM SKRIPTET, LÆS FØR BRUG"
 	echo
-	read -p "ENTER/RETUR FOR MENU "
-	menu
+	echo "TAST <m> FOR MENU, <q> FOR AFSLUTTE " 
+while true; do
+	read -rsn1 opt </dev/tty
+  case $opt in
+    [m] | [M])
+	  menu
+    ;;
+  [q] | [Q])
+    break
+    ;;
+esac
+done
+exit 0
 }
   
-
 menu(){
-  if [[ -z "$0" ]]; then
-    menu_start
-  fi
-}
-
-menu_start(){
-  while :
-	do
 	clear
 	echo $os
   nmcli c s | while read line; do
@@ -697,33 +812,34 @@ menu_start(){
       fi
   done
 	echo
-  echo "<r> ........... TÆND ELLER SLUK WIFI"
-	echo "<c> ........... VIS/FORBIND TIL NETVÆRK"
-	echo "<vpn> ......... FORBIND VIA OPENVPN KONFIGURATION"
-	echo "<a> ........... OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
-	echo "<niettrekvarte> FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
-	echo "<conf> ........ VIS KONFIGUREREDE NETVÆRSKFORBINDELSER"
-	echo "<d> ........... SLET KONFIGURERET NETVÆRKSFORBINDELSE"
-	echo "<q> ........... AFSLUT"
+  echo "[r]adio ....... TÆND ELLER SLUK WIFI RADIO"
+	echo "[f]orbind ..... FORBIND/VIS TIL NETVÆRK"
+	echo "[v]pn ......... FORBIND VIA OPENVPN KONFIGURATION"
+	echo "[a]uto ........ OPRET AUTOMATISK NETVÆRKSFORBINDELSE"
+	echo "[n]iettrekvarte FORSØG AT BRYDE LÅST NETVÆRKSFORBINDELSE"
+	echo "[g]emt ........ VIS GEMTE NETVÆRSKFORBINDELSER"
+	echo "[s]let ........ SLET KONFIGURERET NETVÆRKSFORBINDELSE"
+	echo "[q]uit ........ AFSLUT"
 	echo
-  echo "<help> ........ HJÆLP"
-	echo "<about> ... (!) OM SKRIPTET, LÆS FØR BRUG"
+  echo "[h]jælp ....... HJÆLP"
+	echo "[o]m ...... (!) OM SKRIPTET, LÆS FØR BRUG"
   echo
-	read -p "KOMMANDO " opt	
+  while true; do 
+	  read -rsn1 opt </dev/tty	
 		case $opt in
-		"a" | "A")
+		[a] | [A])
 			opstartsforb
 			clear
 	 		echo $os
 			echo
 			;;
-		[c] | [C])
+		[f] | [F])
 			midlforb
 			clear
 			echo $os
 			echo
 			;;
-		"vpn" | "Vpn" | "VPN")
+		[v] | [V])
 			openvpn
 			clear
 			echo $os
@@ -735,31 +851,31 @@ menu_start(){
       echo $os
       echo
       ;;
-		[d] | [D])
+		[s] | [S])
 			fjernforb
 			clear
 			echo $os
 			echo
 			;;
-		"conf" | "CONF" | "Conf")
+		[g] | [G])
 			viskonf
 			clear
 			echo $os
 			echo
 			;;
-		"about" | "ABOUT" | "About")
+		[o] | [O])
 			om
 			clear
 			echo $os
 			echo
 			;;
-		"niettrekvarte" | "NIETTREKVARTE" | "Niettrekvarte")
+		[n] | [N])
 			niettrekvarte
 			clear
 			echo $os
 			echo
 			;;
-    "help" | "HELP" | "Help")
+    [h] | [H])
       clear 
       help
       echo $os
@@ -768,24 +884,18 @@ menu_start(){
 		[q] | [Q])
 			exit 0		
 			;;
-		*)
-			menuflag="KOMMANDOEN BLEV IKKE GENKENDT."
-			clear
-			echo $os
-			echo
+    *)
+      :
 		esac
-	done
-	
+done
 }
 
 	######################################
 	#### *  PROGRAMMER STARTER HER * #####
        ##### TAG IMOD ARGUMENT? #####
 
-if [ "$1" == "vpn" ]; then
+if [ "$1" == "v" ]; then
   openvpn
-elif [ "$1" == "f" ]; then
-  udkig
 elif [ "$1" == "a" ]; then
   opstartsforb
 elif [ "$1" == "c" ]; then
@@ -794,16 +904,18 @@ elif [ "$1" == "r" ]; then
   wifi_radio
 elif [ "$1" == "d" ]; then
   fjernforb
-elif [ "$1" == "conf" ]; then
+elif [ "$1" == "g" ]; then
   viskonf
-elif [ "$1" == "about" ]; then
+elif [ "$1" == "o" ]; then
   om
-elif [ "$1" == "niettrekvarte" ]; then
- niettrekvarte 
+elif [ "$1" == "n" ]; then
+ niettrekvarte
+elif [ "$1" == "h" ];then
+  help
 fi
 
 	################# MENU ###############
 
-menu_start
+menu
 
 exit 0
