@@ -10,7 +10,8 @@
 ###                                                        ###
 ### TODO.                                                  ###
 ###     1. Oprydning og optimering af sproget              ###
-###     2.SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING ###
+###     2. Lister med ordbøger og regler.
+###     3.SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING ###
 ###       I KONFIGURATIONSFIL OG MERE SIKKER SLETNING AF   ###
 ###       CRACK-FILER, FOR AT GÅ I BETA                    ###
 ###                                                        ###
@@ -19,7 +20,7 @@
 # VERSION
 #
 
-os="# NETTO - version 0.57a"
+os="# NETTO - version 0.57.1a"
 
 # FARVER
 #
@@ -74,9 +75,7 @@ niettrekvarte(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####      S T O P P E R  N E T W O R K M A N A G E R  I  S Y S T E M C T L     #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo "> STOPPER NETWORKMANAGER"
 	echo ""
 	sudo systemctl stop NetworkManager &>/dev/null
 	clear
@@ -84,9 +83,7 @@ niettrekvarte(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "##### A I R C R A C K - N G  T J E K K E R  O G  D R Æ B E R  P R O C E S S E R #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo "> STOPPER MULIGE DAEMON KONFLIKTER"
 	echo ""
 	sudo airmon-ng check kill &>/dev/null
 	clear
@@ -94,19 +91,17 @@ niettrekvarte(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####     A I R C R A C K - N G  S T A R T E R  M O N I T O R E R I N G      #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+  echo "> (1/2) STARTER MONITORERING VIA NETVÆRKSKORTET"
 	echo ""
 	sudo airmon-ng start "$wlan_enhed" &>/dev/null
 	clear
 	
+  echo "> STARTER MONITORERING VIA NETVÆRKSKORTET"
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-  echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####      F I N D E R  U D S T Y R E T  T I L  M O N I T O R E R I N G      #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+  echo "> (1/2) STARTER MONITORERING VIA NETVÆRKSKORTET"
+  echo "> (2/2) FINDER NETVÆRKSKORTET"
 	echo ""
 	
   output_fil=$(mktemp)
@@ -133,15 +128,13 @@ crackshake(){
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
 	echo "(1/2) SKRIPTET STARTER NU AIRODUMP-NG. DER GENERERES EN LIST AF TILGÆNGELIGE NETVÆRK.   "
-	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES q-TASTEN TO GANGE."
+	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES [q] TO GANGE.     "
+	echo "      VEND TILBAGE TIL HOVEDMENUEN, VED AT TRYKKE ENTER, UDEN INDTASTNING, PÅ NÆSTE SIDE."
 	echo "                                                                                        "
+	echo "      (!) Vær ekstra opmærksom når dette tegn vises. Dette skyldes skriptets            "
+	echo "          alpha-tilstand.                                                               "
 	echo "                                                                                        "
-	echo "      (!) Når dette tegn vises skal du være ekstra opmærksom. Dette skyldes skriptets   "
-	echo "          alpha-tilstand. Vær opmærksom på at, hvis du sendes tilbage hertil er der     "
-	echo "          noget, der usædvanligt utilstrækkeligt ved din indtastning.                   "
-	echo "                                                                                        "
-	echo "                                                                                        "
-	read -p ">  ENTER/RETURN for at fortsætte... " </dev/tty
+	read -p "ENTER/RETUR > " </dev/tty
 	
   sudo airodump-ng --band abg "$monitor_enhed" # --band a for 5ghz intet band argument 2ghz
 
@@ -172,28 +165,19 @@ crackmeth(){
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
   echo "(2/2) AIRODUMP-NG OVERVÅGER NU FORBINDELSEN OG FORSØGE AT OPFANGE ET HÅNDTRYK.     "
-  echo "      ET HÅNDTRYK KAN GENERERES NÅR ET APPARAT FORSØGER AT OPRETTE FORBINDELSE TIL "
-	echo "      NETVÆRKET. HVIS DU BLIVER TRÆT AF AT VENTE, KAN DU FORSØGE AT GENNEMTVINGE ET"
-	echo "      HÅNDTRYK, VED SELV AT FORSØGE AT OPRETTE FORBINDELSE TIL NETVÆRKET.          "
+  echo "      ET HÅNDTRYK KAN GENERERES NÅR ET APPARAT OPRETTER FORBINDELSE TIL NETVÆRKET. "
 	echo "      HVIS DER GENERERES ET HÅNDTRYK, VISES DETTE I ØVERSTE HØJRE HJØRNE.          "
 	echo "                                                                                   "
-	echo "      TRYK TO GANGE PÅ q-TASTEN NÅR ET HÅNDTRYK MELDES FUNDET.                     "
+	echo "      TRYK TO GANGE PÅ [q] NÅR ET HÅNDTRYK MELDES FUNDET.                          "
 	echo "                                                                                   "
 	echo "      (!) HVILKEN METODE VIL DU BRUGE TIL AT CRACKE FORBINDELSEN NÅR HÅNDTRYKKET ER"
 	echo "          GENERERET?                                                               "
 	echo "                                                                                   "
 	echo "          [ho] HASHCAT CRACKING MED ORDBOG, MEN UDEN REGELSÆT (HURTIG)             "
-	echo "               Denne metode anbefales ved brug af god WPA-ordbog.                  "
 	echo "                                                                                   "
 	echo "          [hr] HASHCAT CRACKING MED ORDBOG MED REGELSÆT (MULIGVIS MEGET LANGSOM)   "
-	echo "               Denne metode anbefales ikke til brug af WPA cracking. Men hvis du   "
-	echo "               ved hvad du laver og har visse info om sikkerhedskoden kan denne    "
-	echo "               metode være nyttig. Opsætning af ordbog og regel er muligvis        " 
-	echo "               nødvendig.                                                          "
 	echo "                                                                                   "
 	echo "          [ac] AIRCRACK CRACKING MED ORDBOG; MEN UDEN REGELSÆT (LANGSOM)           "
-	echo "               Denne metode langsommere end h1, men kan være nyttig, hvis Hashcat  "
-	echo "               ikke er installeret (af en eller anden mystisk årsag).              "
 	echo ""
 	read -p "> " valg </dev/tty
 	metode_proxy
@@ -228,7 +212,7 @@ crack_med_ordbog(){
 	ls -f ${HOME}/dicts
 	
   echo ""
-	read -p "> (!) SKRIV ORDBOGENS FILNAVN " ordbog </dev/tty
+	read -p "SKRIV ORDBOGENS FILNAVN > " ordbog </dev/tty
 	
   ordbogens_placering="${HOME}/dicts/${ordbog}"
 	
@@ -246,20 +230,15 @@ start_internet(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####                 S T O P P E R  M O N I T O R E R I N G                 #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo "> STOPPER MONITORERIN"
 	echo ""
 	sudo airmon-ng stop "$monitor_enhed" &>/dev/null
 	clear
 
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
-  echo
   echo ""
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####  N E T W O R K M A N A G E R  A K T I V E R E S  I  S Y S T E M C T L  #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo "> NETWORKMANAGER STARTES"
 	echo 
 	sudo systemctl start NetworkManager &>/dev/null
   clear
@@ -286,7 +265,7 @@ hc_regel_crack(){
   ls -f ${HOME}/rules
 	echo
 	
-  read -p "> INDTAST REGELSÆTTETS FILNAVN " regel </dev/tty
+  read -p "INDTAST REGELSÆTTETS FILNAVN > " regel </dev/tty
 	
   regel_filens_placering="${HOME}/rules/${regel}" 
 	
@@ -394,6 +373,7 @@ hc_ordbog_crack(){
 	#################### CRACK MED AIRCRACK-NG #################
 
 ac_ordbog_crack(){
+  
   echo -e $farve_std
 	clear
 
@@ -439,6 +419,7 @@ ac_ordbog_crack(){
   ### AUTOMATISK OPSTARTSFORBINDELSE ###
 
 opstartsforb(){
+  
   echo -e $farve_std
 	clear
 
@@ -513,6 +494,7 @@ opstartsforb(){
   ###### MIDLERTIDIG FORBINDELSE ######
 
 midlforb(){
+  
   echo -e $farve_std
   clear
 
@@ -587,6 +569,7 @@ midlforb(){
   ###### VPN FORBINDELSE ######
 
 openvpn(){
+  
   echo -e $farve_std
 	clear
 
@@ -611,6 +594,7 @@ openvpn(){
 }
 
 vpnstart(){
+  
   echo -e $farve_std
 	clear
 
@@ -711,6 +695,7 @@ vpnstart(){
   ###### SLET FORBINDELSE ######
 
 fjernforb(){
+  
   echo -e $farve_std
 	clear
 
@@ -747,6 +732,7 @@ fjernforb(){
   ##### VIS KONFIGUREREDE/GEMTE FORBINDELSER #######
 
 viskonf(){
+  
   echo -e $farve_std
 	clear
 
@@ -781,6 +767,7 @@ viskonf(){
   ###### WIFI: TÆND ELLER SLUK RADIO #######
 
 wifi_radio(){
+  
   echo -e $farve_std
   clear
 
@@ -841,6 +828,7 @@ exit 0
   ####### OM SKRIPTET ########
 
 om(){
+  
   echo -e $farve_std
 	clear
 
@@ -948,6 +936,7 @@ exit 0
   ####### HJÆLP #######
 
 hlp(){
+  
   echo "FØLGENDE ARGUMENTER KAN BRUGES FRA KOMMANDO PROMT"
   echo "FOR@EKSEMPEL [~] $ netto vpn"
   echo "<[r]adio>            : TÆND ELLER SLUK WIFI RADIO"
@@ -982,6 +971,7 @@ hlp(){
 }
   
 menu(){
+  
   echo -e ${farve_std}
 	clear
 
