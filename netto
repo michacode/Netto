@@ -5,8 +5,10 @@
 ### NETTO: PERSONLIGT NETVÆRKSSKRIPT                       ###
 ###                                                        ###
 ### ÆNDRINGER.                                             ###
-###   * Version 0.57a                                      ###
+###   * Version 0.57.2a                                      ###
 ###     1.Opryd. og optim. af sproget i "niettrekvarte".   ###
+###     2. Niettrekvarte søger nu både efter wlp og wlan;  ###
+###        wlp*mon værende nyere enheder end wlan.         ###
 ###                                                        ###
 ### TODO.                                                  ###
 ###     1. Oprydning og optimering af sproget              ###
@@ -20,7 +22,7 @@
 # VERSION
 #
 
-os="# NETTO - version 0.57.1a"
+os="# NETTO - version 0.57.2a"
 
 # FARVER
 #
@@ -36,8 +38,6 @@ farve_std="\e[39m" #STANDARD
 # MIDLERTIDIGE FILER
 #
 
-ovpnindh=$(mktemp)
-vpnmenuselect=$(mktemp)
 
 	############################################################
 	######################## Funktioner ########################
@@ -65,7 +65,7 @@ niettrekvarte(){
 	  $soeg_enhed  > ${output_fil}
 	  while read line; do
 		  for enhed in $line; do
-        wlan_enhed=$(sudo -s airmon-ng | awk '/wlp/ {print $2}')
+        wlan_enhed=$(sudo -s airmon-ng | awk '/wlp/ || /wlan/ {print $2}')
 				  break
 		  done
 	  done<${output_fil}
@@ -109,7 +109,7 @@ niettrekvarte(){
   ifconfig="ifconfig" ; $ifconfig > ${output_fil}
 	while read line; do
 		for enhed in $line; do
-      monitor_enhed=$(ifconfig | awk '/wlp4s0mon/ {print $1}' | sed 's/://')
+      monitor_enhed=$(ifconfig | awk '/wlp/ || /wlan/ {print $1}' | sed 's/://')
 				break
 		done
 	done<${output_fil}
@@ -490,7 +490,7 @@ opstartsforb(){
   exit 0
 
 }
-
+  #####################################
   ###### MIDLERTIDIG FORBINDELSE ######
 
 midlforb(){
@@ -565,10 +565,13 @@ midlforb(){
 
 }
 
-
+  #############################
   ###### VPN FORBINDELSE ######
 
 openvpn(){
+  
+  ovpn_forbindelser=$(mktemp)
+  vpnmenuselect=$(mktemp)
   
   echo -e $farve_std
 	clear
@@ -581,16 +584,13 @@ openvpn(){
 	ls -f /etc/openvpn/*.txt
 	echo
 	
-  read -p "SKRIV FILENS NAVN " pass
+  read -p "SKRIV FILENS NAVN " 
 	
-  passpath="/etc/openvpn/${pass}"
-	echo $passpath
+  fil_stig="/etc/openvpn/${@}"
+	echo $@
 	
-  if [[ -f "$passpath" ]]; then
-		vpnstart
-	else
-		openvpn
-	fi
+  [[ -f "$fil_stig" ]] && vpnstart || openvpn
+
 }
 
 vpnstart(){
@@ -601,27 +601,27 @@ vpnstart(){
 	echo $os
   echo "# FORBIND TIL ET VIRTUELT PRIVAT NETVÆRK"
 	echo
-	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONSFILER (*.ovpn ELLER *.conf):"
+	echo "VÆLG EN AF DINE OPENVPN KONFIGURATIONSFILER:"
 	echo
 	
   count=0
-	cmdovpn="ls -f /etc/openvpn/*.ovpn"
-	cmdconf="ls -f /etc/openvpn/*.conf"
+	list_ovpn_filer="ls -f /etc/openvpn/*.ovpn"
+	list_conf_filer="ls -f /etc/openvpn/*.conf"
 	
   # Skriver output med indhold til tempfil
 
-  $cmdovpn>${ovpnindh}
-	cmdconf>>${ovpnindh}
+  $list_ovpn_filer>${ovpn_forbindelser}
+	$list_conf_filer>>${ovpn_forbindelser}
 	
   # Skanner indholdet af tempfil og laver ny med 1=*,2=*...
 
   while read index;
 		do
-		for ovpnfiler in $index; do
+		for liste_indhold in $index; do
 			((count++))
-			echo "<${count}>${ovpnfiler}" >> ${vpnmenuselect}
+			echo "[${count}]${ovpn_kofiguratione}" >> ${vpnmenuselect}
 		done
-	done<${ovpnindh}
+	done<${ovpn_forbindelser}
 	
   # Opstiller menuen
 
@@ -638,8 +638,8 @@ vpnstart(){
 	do
 		for valg in $line
 		do
-			if [[ "${valg}" = "<${vpnvalg}>"* ]]; then
-				# Info starter efter lighedstegnet				
+			if [[ "${valg}" = "[${vpnvalg}]"* ]]; then
+				# Info starter efter >				
 			       	valgtvpn=${valg#*>}
 		fi
 		done
