@@ -57,17 +57,24 @@ niettrekvarte(){
   echo
   echo "CRACKING AF NETVÆRK KRÆVER IKKE KUN PERSONLIGE TILLADELSER."
 
-# DETTE KAN MULIGVIS OPTIMERES MED AWK.	
+# DETTE KAN MULIGVIS OPTIMERES MED AWK.
+# - det kan faktisk gøres med bash (hvilket er lynhurtigt):
 
   output_fil=$(mktemp)
   echo "> Finder wlan-enhed"
   soeg_enhed="sudo -s airmon-ng"
 	  $soeg_enhed  > ${output_fil}
 	  while read line; do
-		  for enhed in $line; do
-        wlan_enhed=$(sudo -s airmon-ng | awk '/wlp/ || /wlan/ {print $2}')
-				  break
-		  done
+			
+# tjek om $line ligner wlp eller wlan, hvis ikke, så gå til næste linje
+# det samme som awk '/wlp/ || /wlan/'
+			[[ "$line" =~ wlp|wlan ]] || continue
+
+# split $line på ' ' og sæt andet element som wlan_enhed
+# det samme som awk '{print $2}'
+			read -d ' ' -ra tmp_array <<< "$line"
+			wlan_enhed="${tmp_array[1]}"
+		  
 	  done<${output_fil}
   rm $output_fil
   clear
@@ -108,6 +115,7 @@ niettrekvarte(){
   
   ifconfig="ifconfig" ; $ifconfig > ${output_fil}
 	while read line; do
+# du kan naturligvis gøre det samme her
 		for enhed in $line; do
       monitor_enhed=$(ifconfig | awk '/wlp/ || /wlan/ {print $1}' | sed 's/://')
 				break
@@ -142,7 +150,9 @@ crackshake(){
 	read -p "(!) BSSID: " bssid </dev/tty
 
   # Hvis ingen indtastning, så send "afslut" variabel til crackmetode
-  [[ -z $bssid ]] && metode="afslut" && start_internet && menu
+# man kan samle kommandoer med { }, sådan de bliver eksekveret sammen
+# så hvis $bssid længde er 0, kør alle commandoer i { }
+	[[ -z $bssid ]] && { metode="afslut"; start_internet; menu;}
 	
   read -p "(!) KANAL: " kanal </dev/tty
 	read -p "HÅNDTRYKKETS KALDENAVN: " hndtryk </dev/tty
@@ -212,9 +222,12 @@ crack_med_ordbog(){
 	ls -f ${HOME}/dicts
 	
   echo ""
-	read -p "SKRIV ORDBOGENS FILNAVN > " ordbog </dev/tty
+# jeg har lige lært at read kan fungere som readline med -e,
+# dvs. at den bruger alle promptens funktioner, inklusiv tab.
+# -i er start tekst
+	read -ei "$HOME/dicts/" -p "SKRIV ORDBOGENS FILNAVN > " ordbog </dev/tty
 	
-  ordbogens_placering="${HOME}/dicts/${ordbog}"
+  ordbogens_placering="${ordbog}"
 	
   [[ -f "$ordbogens_placering" ]] &&	start_internet || [[ -z "$ordbog" ]] && menu || crack_med_ordbog
 
@@ -300,9 +313,11 @@ start_crack_med_regel(){
 	echo
   
   # IKKE HELT SIKKER METODE TIL SLETNING ...
+# det er helt fint
   rm ${hndtryk}*.*
 
   # Menu eller afslut?
+# er der en grund til at dette ikke er en funktion?
 
 	echo "[m]   MENU"
   echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
