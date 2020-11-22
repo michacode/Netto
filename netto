@@ -11,6 +11,7 @@
 ###        wlp*mon værende nyere enheder end wlan.         ###
 ###                                                        ###
 ### TODO.                                                  ###
+###     1. OPENVPN FUNKTION.                               ###
 ###     1. Oprydning og optimering af sproget              ###
 ###     2. Lister med ordbøger og regler.
 ###     3.SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING ###
@@ -584,9 +585,9 @@ openvpn(){
 	ls -f /etc/openvpn/*.txt
 	echo
 	
-  read -p "SKRIV FILENS NAVN " 
+  read -p "SKRIV FILENS NAVN " fil_navn </dev/tty
 	
-  fil_stig="/etc/openvpn/${@}"
+  fil_stig="/etc/openvpn/${fil_navn}"
 	echo $@
 	
   [[ -f "$fil_stig" ]] && vpnstart || openvpn
@@ -619,7 +620,7 @@ vpnstart(){
 		do
 		for liste_indhold in $index; do
 			((count++))
-			echo "[${count}]${ovpn_kofiguratione}" >> ${vpnmenuselect}
+			echo "[${count}]${liste_indhold}" >> ${vpnmenuselect}
 		done
 	done<${ovpn_forbindelser}
 	
@@ -640,12 +641,11 @@ vpnstart(){
 		do
 			if [[ "${valg}" = "[${vpnvalg}]"* ]]; then
 				# Info starter efter >				
-			       	valgtvpn=${valg#*>}
+			       	valgtvpn=${valg#*]}
 		fi
 		done
 	done<${vpnmenuselect}
 
-	rm $ovpnindh
 	rm $vpnmenuselect
 
   # Gør kommandoen til start af vpn forbindelse klar
@@ -666,7 +666,7 @@ vpnstart(){
 	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
 	echo
 	cd /etc/openvpn
-	sudo openvpn --config "$valgtvpn" --auth-user-pass "$passpath" --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre
+	sudo openvpn --config "$valgtvpn" --auth-user-pass "$fil_stig" --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre
 	
   # Menu eller afslut?
 
