@@ -5,15 +5,14 @@
 ### NETTO: PERSONLIGT NETVÆRKSSKRIPT                       ###
 ###                                                        ###
 ### ÆNDRINGER.                                             ###
-###   * Version 0.57.2a                                      ###
-###     1.Opryd. og optim. af sproget i "niettrekvarte".   ###
-###     2. Niettrekvarte søger nu både efter wlp og wlan;  ###
-###        wlp*mon værende nyere enheder end wlan.         ###
+###   * Version 0.58a                                      ###
+###     1. VPN fikset                                      ###
+###     2. Menu_quit() funktion                            ###
+###     3. Oprydning i sprog                               ###
 ###                                                        ###
 ### TODO.                                                  ###
-###     1. OPENVPN FUNKTION.                               ###
 ###     1. Oprydning og optimering af sproget              ###
-###     2. Lister med ordbøger og regler.
+###     2. Lister med ordbøger og regler.                  ###
 ###     3.SKRIPTET MANGLER MULIGHED FOR AT GEMME OPSÆTNING ###
 ###       I KONFIGURATIONSFIL OG MERE SIKKER SLETNING AF   ###
 ###       CRACK-FILER, FOR AT GÅ I BETA                    ###
@@ -23,7 +22,7 @@
 # VERSION
 #
 
-os="# NETTO - version 0.57.2a"
+os="# NETTO - version 0.58a"
 
 # FARVER
 #
@@ -35,10 +34,42 @@ farve_mag="\e[95m" #MAGENTA
 farve_rd="\e[91m"  #RØD
 farve_std="\e[39m" #STANDARD
 
-
-# MIDLERTIDIGE FILER
+# MENU_QUIT
 #
 
+menu_quit(){
+
+  echo "[m]   MENU"
+  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
+	 
+  while true; do
+	  read -rsn1 opt </dev/tty
+    case $opt in
+      "m" | "M" )
+        clear
+        echo $os
+	      menu
+        ;;
+      "q" | "Q" )
+        break
+        ;;
+    esac
+  done
+
+  exit 0
+}
+
+# TJEK_FORBINDELSE
+#
+
+tjek_forbind(){
+
+  test_net=$(ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; echo $?)
+  for nr in $test_net; do
+    [[ "$nr" == "0" ]] && nmcli c s | awk '!/NAME/'| while read line; do [[ ! "$line" == *"--"* ]] && echo $line | awk '/[0-9]/ {print "# TILSLUTTET " $1}'; done
+    [[ "$nr" == "2" ]] && echo "# IKKE TILSLUTTET INTERNETTET"
+  done
+}
 
 	############################################################
 	######################## Funktioner ########################
@@ -65,7 +96,7 @@ niettrekvarte(){
   soeg_enhed="sudo -s airmon-ng"
 	  $soeg_enhed  > ${output_fil}
 	  while read line; do
-		  for enhed in $line; do
+      for enhed in $line; do 
         wlan_enhed=$(sudo -s airmon-ng | awk '/wlp/ || /wlan/ {print $2}')
 				  break
 		  done
@@ -304,26 +335,7 @@ start_crack_med_regel(){
   rm ${hndtryk}*.*
 
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-	 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_quit
 }
 
 hc_ordbog_crack(){
@@ -349,25 +361,7 @@ hc_ordbog_crack(){
   rm ${hndtryk}*.*
   
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-	 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
+  menu_quit
 
 }
 
@@ -391,25 +385,7 @@ ac_ordbog_crack(){
   rm ${hndtryk}*.*
   
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-	 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
+  menu_quit
 
 }
 
@@ -470,26 +446,7 @@ opstartsforb(){
 }
 
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-  
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      [m] | [M])
-        clear
-        echo $os
-	      menu
-        ;;
-      [q] | [Q])
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_quit
 }
   #####################################
   ###### MIDLERTIDIG FORBINDELSE ######
@@ -544,26 +501,7 @@ midlforb(){
 }
 
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-   
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-    "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_quit
 }
 
   #############################
@@ -573,7 +511,8 @@ openvpn(){
   
   ovpn_forbindelser=$(mktemp)
   vpnmenuselect=$(mktemp)
-  
+  pass_filer=$(mktemp)
+
   echo -e $farve_std
 	clear
 
@@ -582,20 +521,47 @@ openvpn(){
   echo
 	echo "VÆLG TEKSTFILEN INDEHOLDENDE BRUGERNAVN OG ADGANGSKODE:"
 	echo
-	ls -f /etc/openvpn/*.txt
+  
+  count=0
+  list_pass_filer="ls -f /etc/openvpn/*.txt"
+  
+  $list_pass_filer>${pass_filer}
+  
+  while read index; do
+    for liste_indhold in $index; do
+      ((count++))
+      echo "[${count}]${liste_indhold}" > ${vpnmenuselect}
+    done
+  done<${pass_filer}
+  
+  rm $pass_filer  
+
+  cat $vpnmenuselect
 	echo
 	
-  read -p "SKRIV FILENS NAVN " fil_navn </dev/tty
+  
+  read -p "SKRIV NUMMERET " fil_navn </dev/tty
+  #fil_stig="/etc/openvpn/${fil_navn}"
+	#echo $@
 	
-  fil_stig="/etc/openvpn/${fil_navn}"
-	echo $@
-	
-  [[ -f "$fil_stig" ]] && vpnstart || openvpn
-
+  while read line;
+	do
+		for valg in $line
+		do
+			if [[ "${valg}" = "[${fil_navn}]"* ]]; then
+				# Info starter efter ]				
+        fil_stig=${valg#*]}
+        echo $fil_stig
+        vpnstart
+		fi
+		done
+	done<${vpnmenuselect}
+  rm $vpnmenuselect
 }
 
 vpnstart(){
   
+  vpnmenuselect=$(mktemp)
   echo -e $farve_std
 	clear
 
@@ -631,7 +597,7 @@ vpnstart(){
 	echo "(!) NÅR FORBINDELSEN ER OPRETTET AFBRYDES FORBINDELSEN VED AT TRYKKE CTRL-C"
 	echo
 	
-  read -p "SKRIV NUMMERET FØR STIGEN TIL FILEN " vpnvalg
+  read -p "SKRIV NUMMERET FØR STIGEN TIL FILEN " vpnvalg </dev/tty
 	
   # Skanner den nye tempfil for brugerens input
 
@@ -661,35 +627,13 @@ vpnstart(){
   echo
   clear
 
-	echo "#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#####"
-	echo "#####  F O R S Ø G E R  A T  S T A R T E  V P N - F O B I N D E L S E  #####"
-	echo "^^WWWWWWWWWWWWWWVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWWWWWWWWWWWWWW^^"
+	echo "> Forsøger at starte Openvpn"
 	echo
 	cd /etc/openvpn
 	sudo openvpn --config "$valgtvpn" --auth-user-pass "$fil_stig" --setenv PATH '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' --script-security 2 --up /etc/openvpn/scripts/update-systemd-resolved --down /etc/openvpn/scripts/update-systemd-resolved --down-pre
 	
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-   
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        count=0
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_quit
 }
   
   ###### SLET FORBINDELSE ######
@@ -707,26 +651,7 @@ fjernforb(){
 	nmcli c delete "$conname"
 
 # Menu eller afslut?
-  
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
-   
-  while true; do
-	read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_guit
 }
 
   ##### VIS KONFIGUREREDE/GEMTE FORBINDELSER #######
@@ -742,26 +667,7 @@ viskonf(){
 	nmcli -p -m multiline -f NAME,AUTOCONNECT,AUTOCONNECT-PRIORITY c s
 
   # Menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}" 
-	 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      "m" | "M" )
-        clear
-        echo $os
-	      menu
-        ;;
-      "q" | "Q" )
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  menu_quit
 }
 
   ###### WIFI: TÆND ELLER SLUK RADIO #######
@@ -912,25 +818,8 @@ om(){
 	echo "    ORDBØGER I MAPPEN: /home/*BRUGER*/dicts/"
 	echo
   
-  # Tænd, sluk, menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
- 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      [m] | [M])
-	      menu
-        ;;
-      [q] | [Q])
-        break
-        ;;
-    esac
-  done
-
-exit 0
-
+  # Menu eller afslut?
+  menu_quit
 }
 
   ####### HJÆLP #######
@@ -949,25 +838,8 @@ hlp(){
 	echo "<[o]m>               : OM SKRIPTET, LÆS FØR BRUG"
 	echo
 
-  # Tænd, sluk, menu eller afslut?
-
-	echo "[m]   MENU"
-  echo -e "${farve_rd}[q] AFSLUT${farve_std}"
-	 
-  while true; do
-	  read -rsn1 opt </dev/tty
-    case $opt in
-      [m] | [M])
-	      menu
-        ;;
-      [q] | [Q])
-        break
-        ;;
-    esac
-  done
-
-  exit 0
-
+  # Menu eller afslut?
+  menu_quit
 }
   
 menu(){
@@ -978,18 +850,7 @@ menu(){
 	echo $os
 
   # Tjek forbindelse,
-  test_net=$(ping -q -w 1 -c 1 8.8.8.8 &>/dev/null; echo $?)
-  for nr in $test_net; do
-    if [[ "$nr" == "0" ]]; then
-      nmcli c s | awk '!/NAME/'| while read line; do
-        if [[ ! "$line" == *"--"* ]]; then
-          echo $line | awk '/[0-9]/ {print "# TILSLUTTET " $1}'
-        fi
-      done
-    elif [[ "$nr" == "2" ]]; then
-        echo "# IKKE TILSLUTTET INTERNETTET"
-    fi
-  done
+  tjek_forbind
 
   echo 
   echo "[r]adio ........ TÆND ELLER SLUK WIFI RADIO"
