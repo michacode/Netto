@@ -5,10 +5,12 @@
 ### NETTO: PERSONLIGT NETVÆRKSSKRIPT                       ###
 ###                                                        ###
 ### ÆNDRINGER.                                             ###
+###   * Version 0.58.1a                                    ###
+###     Fiksede problem vedrørende niettrekvarte           ###
 ###   * Version 0.58a                                      ###
-###     1. VPN fikset                                      ###
-###     2. Menu_quit() funktion                            ###
-###     3. Oprydning i sprog                               ###
+###     VPN fikset                                         ###
+###     Menu_quit() funktion                               ###
+###     Oprydning i sprog                                  ###
 ###                                                        ###
 ### TODO.                                                  ###
 ###     1. Oprydning og optimering af sproget              ###
@@ -22,7 +24,7 @@
 # VERSION
 #
 
-os="# NETTO - version 0.58a"
+os="# NETTO - version 0.58.1a"
 
 # FARVER
 #
@@ -322,8 +324,9 @@ start_crack_med_regel(){
   # generér hccapx fil til hashcat cracking ...
   hccapx="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
   $hccapx
-  
+  read -p "Håndtryk: ${hndtryk}.hccapx, regel: ${regel_files_placering}, ordbog: ${ordbogens_placerin}"
   koer_hashcat="sudo hashcat -m 2500 -r $regel_filens_placering ${hndtryk}.hccapx $ordbogens_placering -D 1,2 --force"
+  read -p "$koer_hashcat"
   $koer_hashcat
 
   # Spørger om filerne ønskes slettet ...
@@ -345,13 +348,15 @@ hc_ordbog_crack(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
+  read -p "Rens: ${hndtryk}-01.cap ->  ${hndtryk}.cap"
   wpaclean="wpaclean ${hndtryk}.cap ${hndtryk}-01.cap"
   $wpaclean
   
   hccapx="sudo aircrack-ng -j $hndtryk ${hndtryk}.cap"
   $hccapx
-  
+  read -p "Håndtryk: ${hndtryk}.hccapx, Ordbog: $ordbogens_placering" 
   koer_hashcat="sudo hashcat -m 2500 -a 0 ${hndtryk}.hccapx $ordbogens_placering -D 1,2 --force"
+  read -p "Argument: $koer_hashcat"
   $koer_hashcat
 	
   echo
@@ -375,7 +380,9 @@ ac_ordbog_crack(){
 	echo $os
   echo "# NIETTREKVARTE: FORSØG AT ÅBNE LUKKET FORBINDELSE" 
   echo
-  crack="sudo aircrack-ng -w $dictpath -b $bssid ${hndtryk}-01.cap"
+  read -p "Bssid: $bssid, håndtryk: ${hndtryk}-01.cap"
+  crack="sudo aircrack-ng -w $ordbogens_placering -b $bssid ${hndtryk}-01.cap"
+  read -p "Argument: $crack"
   $crack
 	echo
 	
